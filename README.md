@@ -9,3 +9,6 @@ This directory contains codes from BOJ by [kidw0124](https://www.acmicpc.net/use
 [![BOJ
 프로필](http://mazassumnida.wtf/api/v2/generate_badge?boj=kidw0124)](https://icpc.me/kidw0124)
 ![kidw0124 profile](http://mazandi.herokuapp.com/api?handle=kidw0124)
+
+## 프로그래머스
+This directory contains codes from Programmers by kidw0124
