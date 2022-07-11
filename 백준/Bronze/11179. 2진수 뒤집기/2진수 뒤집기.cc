@@ -33,47 +33,11 @@ int main(){
     ll i,j;
     ll n;
     cin>>n;
-
-    //10진수 -> 8진수
-    stringstream ss;
-    ss<<oct<<n;
-    string str;
-    ss>>str;
-
-    //8진수 -> 2진수 뒤집어진거
-    string ans;
-    if(str=="0")str="0";
-    else{
-        for(auto k:str){
-            ans+=vector<string>({"000","001","010","011",
-                                "100","101","110","111"})[k-'0'];
-        }
-        str=ans.substr(ans.find('1'));
-    }
-
-    //뒤집기
+    bitset<64>bs(n);
+    string str=bs.to_string();
+    str.erase(0,str.find('1'));
     reverse(all(str));
-
-    //2진수 -> 8진수
-    ans="";
-    reverse(all(str));
-    str+="00";
-    for(i=0;i<str.size()-2;i+=3){
-        ans+=[&](const string&ostr){
-            ll ret=0;
-            for(j=0;j<3;j++){
-                ret|=(ostr[j]-'0')<<j;
-            }
-            return ret+'0';
-        }(str.substr(i,3));
-    }
-    reverse(all(ans));
-
-    //출력
-    ss.clear();
-    ss<<ans;
-    ss>>oct>>n;
-    cout<<n;
-
+    bitset<64>ans(str);
+    cout<<ans.to_ullong();
     return 0;
 }
