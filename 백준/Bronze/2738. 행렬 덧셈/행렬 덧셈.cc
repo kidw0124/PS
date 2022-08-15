@@ -1,83 +1,78 @@
-#include<bits/stdc++.h>
-#pragma warning(disable:4996)
-#pragma comment(linker, "/STACK:336777216")
+#ifndef __MATRIX_H__
+#define __MATRIX_H__
+
+#include <vector>
 using namespace std;
-typedef long long ll;
-typedef long long LL;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vl;
-#define pb(x) push_back(x)
-#define all(x) (x).begin(), (x).end()
-ll gcd(ll a, ll b){return b?gcd(b,a%b):a;}
-ll lcm(ll a, ll b){if(a&&b)return a*(b/gcd(a,b)); return a+b;}
-ll POW(ll a, ll b, ll rem){ll p=1;for(;b;b/=2,a=(a*a)% rem)if(b&1)p=(p*a)%rem;return p;}
-template<typename T>class Matrix
-{
-public:
-    Matrix(size_t n, size_t m):n(n),m(m){
-        elements.resize(n,vector<T>(m,0));
-    }
-    Matrix(){
-        Matrix(0,0);
-    }
-    ~Matrix(){
-        elements.clear();
-    }
 
-    Matrix<T> operator+(const Matrix<T>&r){
-        Matrix<T> ret(n,m);
-        for(int i=0;i<n;i++){
-            for(int j=0;j<m;j++){
-                ret.elements[i][j]=elements[i][j]+r.elements[i][j];
-            }
-        }
-        return ret;
-    }
-    void resize(size_t n, size_t m){
-        this->n=n,this->m=m;
-        elements.resize(n,vector<T>(m,0));
-    }
-
-    istream &input(istream&is){
-        for(auto&k:elements)for(auto&kk:k)is>>kk;
-        return is;
-    }
-
-    ostream &print(ostream&os)const{
-        for(const auto k:elements){
-            for(const auto kk:k){
-                os<<kk<<' ';
-            }
-            os<<'\n';
-        }
-        return os;
-    }
-
-protected:
+class MatrixInt{
 private:
-    size_t n,m;
-    vector<vector<T>>elements;
+    vector<vector<int>> matrix;
+public:
+    // Constructors
+    MatrixInt(int rows, int columns);
+    MatrixInt(const MatrixInt& other);
+    MatrixInt(MatrixInt&& other);
+    MatrixInt();
+
+    void add(const MatrixInt& other);
+    void input();
+    void print();
 
 };
+#ifndef __MATRIX_CPP__
+#define __MATRIX_CPP__
 
-template<typename T>istream& operator>>(istream&is, Matrix<T>&M){
-    return M.input(is);
+#include <iostream>
+
+
+MatrixInt::MatrixInt(int rows, int columns) : matrix(rows, vector<int>(columns)) {}
+MatrixInt::MatrixInt(const MatrixInt& other) : matrix(other.matrix) {}
+MatrixInt::MatrixInt(MatrixInt&& other) : matrix(move(other.matrix)) {}
+MatrixInt::MatrixInt() : matrix(0, vector<int>(0)) {}
+
+void MatrixInt::add(const MatrixInt& other) {
+    if (matrix.size() != other.matrix.size() || matrix[0].size() != other.matrix[0].size()) {
+        throw "Matrix sizes do not match";
+    }
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            matrix[i][j] += other.matrix[i][j];
+        }
+    }
 }
-template<typename T>ostream& operator<<(ostream&os, const Matrix<T>&M){
-    return M.print(os);
+
+void MatrixInt::input() {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            cin >> matrix[i][j];
+        }
+    }
 }
+
+void MatrixInt::print() {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << '\n';
+    }
+}
+
+
+#endif // __MATRIX_CPP__
+#endif
+#include <iostream>
+typedef long long int ll;
 
 int main(){
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    ll i,j;
-    ll n,m;
-    cin>>n>>m;
-    Matrix<double>A(n,m),B(n,m);
-    cin>>A>>B;
-    cout<<A+B;
-
-    return 0;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll n, m;
+    cin >> n >> m;
+    MatrixInt mat(n, m), mat2(n, m);
+    mat.input();
+    mat2.input();
+    mat.add(mat2);
+    mat.print();
 }
