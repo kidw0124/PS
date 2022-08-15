@@ -1,41 +1,193 @@
-#include<bits/stdc++.h>
-#pragma warning(disable:4996)
-#pragma comment(linker, "/STACK:336777216")
+#ifndef __MATRIX_H__
+#define __MATRIX_H__
+
+#include <vector>
+#include <iostream>
 using namespace std;
-typedef long long ll;
-typedef long long LL;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vl;
-#define pb(x) push_back(x)
-#define all(x) (x).begin(), (x).end()
-ll gcd(ll a, ll b){return b?gcd(b,a%b):a;}
-ll lcm(ll a, ll b){if(a&&b)return a*(b/gcd(a,b)); return a+b;}
-ll POW(ll a, ll b, ll rem){ll p=1;for(;b;b/=2,a=(a*a)% rem)if(b&1)p=(p*a)%rem;return p;}
-ll n,m,k;
-ll arr[200][200],brr[200][200];
-int main(){
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    ll i,j;
-    cin>>n>>m;
-    for(i=0;i<n;i++){
-        for(j=0;j<m;j++)cin>>arr[i][j];
+
+class MatrixInt{
+private:
+    vector<vector<int>> matrix;
+public:
+    // Constructors
+    MatrixInt(int rows, int columns);
+    MatrixInt(const MatrixInt& other);
+    MatrixInt(MatrixInt&& other);
+    MatrixInt(vector<vector<int>>&& other);
+    MatrixInt(vector<vector<int>>& other);
+    MatrixInt();
+
+    // Assignment operator
+    MatrixInt& operator=(const MatrixInt& other);
+    MatrixInt& operator=(MatrixInt&& other);
+    MatrixInt& operator=(vector<vector<int>>&& other);
+    MatrixInt& operator=(vector<vector<int>>& other);
+    
+    // IO methods
+    void input(istream& is);
+    void print(ostream& os) const ;
+
+    // Matrix operations
+    void add(const MatrixInt& other);
+    void subtract(const MatrixInt& other);
+    MatrixInt multiply(const MatrixInt& other);
+
+
+    // Operators
+    MatrixInt operator+(const MatrixInt& other);
+    MatrixInt& operator+=(const MatrixInt& other);
+    MatrixInt operator-(const MatrixInt& other);
+    MatrixInt& operator-=(const MatrixInt& other);
+    MatrixInt operator*(const MatrixInt& other);
+    MatrixInt& operator*=(const MatrixInt& other);
+
+
+};
+
+#ifndef __MATRIX_CPP__
+#define __MATRIX_CPP__
+
+
+#include <iostream>
+
+
+MatrixInt::MatrixInt(int rows, int columns) : matrix(rows, vector<int>(columns)) {}
+MatrixInt::MatrixInt(const MatrixInt& other) : matrix(other.matrix) {}
+MatrixInt::MatrixInt(MatrixInt&& other) : matrix(move(other.matrix)) {}
+MatrixInt::MatrixInt(vector<vector<int>>&& other) : matrix(move(other)) {}
+MatrixInt::MatrixInt(vector<vector<int>>& other) : matrix(other) {}
+MatrixInt::MatrixInt() : matrix(0, vector<int>(0)) {}
+
+MatrixInt& MatrixInt::operator=(const MatrixInt& other){
+    matrix = other.matrix;
+    return *this;
+}
+MatrixInt& MatrixInt::operator=(MatrixInt&& other){
+    matrix = move(other.matrix);
+    return *this;
+}
+MatrixInt& MatrixInt::operator=(vector<vector<int>>&& other){
+    matrix = move(other);
+    return *this;
+}
+MatrixInt& MatrixInt::operator=(vector<vector<int>>& other){
+    matrix = other;
+    return *this;
+}
+
+void MatrixInt::add(const MatrixInt& other) {
+    if (matrix.size() != other.matrix.size() || matrix[0].size() != other.matrix[0].size()) {
+        throw "Matrix sizes do not match";
     }
-    cin>>m>>k;
-    for(i=0;i<m;i++){
-        for(j=0;j<k;j++)cin>>brr[i][j];
-    }
-    for(i=0;i<n;i++){
-        for(j=0;j<k;j++){
-            ll ans=0;
-            for(ll l=0;l<m;l++){
-                ans+=arr[i][l]*brr[l][j];
-            }
-            cout<<ans<<' ';
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            matrix[i][j] += other.matrix[i][j];
         }
-        cout<<'\n';
     }
-    return 0;
+}
+
+void MatrixInt::subtract(const MatrixInt& other) {
+    if (matrix.size() != other.matrix.size() || matrix[0].size() != other.matrix[0].size()) {
+        throw "Matrix sizes do not match";
+    }
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            matrix[i][j] -= other.matrix[i][j];
+        }
+    }
+}
+
+MatrixInt MatrixInt::multiply(const MatrixInt& other) {
+    // Matrix multiplication size check
+    if (matrix[0].size() != other.matrix.size()) {
+        throw "Matrix sizes do not match";
+    }
+    // Matrix multiplication
+    MatrixInt result(matrix.size(), other.matrix[0].size());
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < other.matrix[0].size(); j++) {
+            for (int k = 0; k < matrix[0].size(); k++) {
+                result.matrix[i][j] += matrix[i][k] * other.matrix[k][j];
+            }
+        }
+    }
+    return result;
+}
+
+void MatrixInt::input(istream& is = cin) {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            is >> matrix[i][j];
+        }
+    }
+}
+
+void MatrixInt::print(ostream& os = cout) const {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            os << matrix[i][j] << " ";
+        }
+        os << '\n';
+    }
+}
+
+MatrixInt MatrixInt::operator+(const MatrixInt& other) {
+    MatrixInt result(*this);
+    result.add(other);
+    return result;
+}
+
+MatrixInt& MatrixInt::operator+=(const MatrixInt& other) {
+    *this = *this + other;
+    return *this;
+}
+
+MatrixInt MatrixInt::operator-(const MatrixInt& other) {
+    MatrixInt result(*this);
+    result.subtract(other);
+    return result;
+}
+
+MatrixInt& MatrixInt::operator-=(const MatrixInt& other) {
+    *this = *this - other;
+    return *this;
+}
+
+MatrixInt MatrixInt::operator*(const MatrixInt& other) {
+    return MatrixInt(this->multiply(other));
+}
+
+MatrixInt& MatrixInt::operator*=(const MatrixInt& other) {
+    *this = *this * other;
+    return *this;
+}
+
+
+#endif // __MATRIX_CPP__
+#endif
+#include <iostream>
+typedef long long int ll;
+
+istream& operator>>(istream& is, MatrixInt& m) {
+    m.input(is);
+    return is;
+}
+
+ostream& operator<<(ostream& os, const MatrixInt& m) {
+    m.print(os);
+    return os;
+}
+
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll n, m,k;
+    cin >> n >> m;
+    MatrixInt mat(n, m);
+    cin>>mat;
+    cin>>m>>k;
+    MatrixInt mat2(m, k);
+    cin>>mat2;
+    cout<<mat*mat2<<endl;
 }
