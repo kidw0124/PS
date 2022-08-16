@@ -35,15 +35,16 @@ int main(){
     ll i,j;
     ll n;
     cin>>n;
-    vector<pair<ll,string>>arr(n);
+    vector<string>arr(n);
     each(x,arr){
-        cin>>x.second;
-        x.first=x.second.size();
+        cin>>x;
     }
-    sort(all(arr));
+    sort(all(arr),[](const string& a, const string& b){
+        return a.size()==b.size()?a<b:a.size()<b.size();
+    });
     arr.erase(unique(all(arr)),arr.end());
     each(x,arr){
-        cout<<x.second<<endl;
+        cout<<x<<endl;
     }
 
     return 0;
