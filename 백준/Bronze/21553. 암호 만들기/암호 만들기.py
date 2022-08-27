@@ -1,0 +1,2 @@
+_=input()
+print(input())
