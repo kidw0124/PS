@@ -36,10 +36,8 @@ int main(){
 	ll n,f;
 	cin>>n>>f;
 	n=n/100*100;
-	if(n%f){
-		n+=f-n%f;
-	}
-	cout<<setw(2)<<setfill('0')<<n%100;
+	n+=f-n%f;
+	cout<<setw(2)<<setfill('0')<<n%100%f;
 
 
 
