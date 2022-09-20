@@ -1,46 +1,33 @@
 #include<bits/stdc++.h>
+#include<iostream>
+#include<string>
+#include<algorithm>
+#include<set>
+#include<string.h>
 using namespace std;
-int arr[100001];
-void Solution(int n, int key){
-    int start = 0;
-    int end = n-1;
-    int mid;
-    while(end - start >= 0){
-        mid = (start + end)/2;
-        if(arr[mid] == key){
-            printf("1\n");
-            return ;
-        }else if(arr[mid] > key) { //key 값이 배열의 중앙 값보다 작을때 (왼쪽으로)
-            end = mid - 1;
 
-        }else{  //key 값이 배열의 중앙 값보다 클때 (오른쪽으로)
-            start = mid + 1;
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    unordered_set<int> a;
+    int n;
+    cin>>n;
+    for(int i=0;i<n;i++){
+        int x;
+        cin>>x;
+        a.insert(x);
+    }
+    int m;
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int x;
+        cin>>x;
+        if(a.find(x)!=a.end()){
+            cout<<"1\n";
+        }
+        else{
+            cout<<"0\n";
         }
     }
-
-    printf("0\n");
-    return ;
-}
-
-int main(void){
-
-    int n, m, tmp;
-
-    //입력
-    scanf("%d", &n);
-
-    for(int i=0; i<n; i++){
-        scanf("%d", &arr[i]);
-    }
-    sort(arr, arr+n);   //quick sort를 이용해 배열 오름차순으로 정렬
-
-    //입력
-    scanf("%d", &m);
-
-    for(int i=0; i<m; i++){
-        scanf("%d", &tmp);
-        Solution(n, tmp);
-    }
-
-    return 0;
 }
