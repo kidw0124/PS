@@ -1,0 +1,2 @@
+#include <cstdio>
+int A[9], mx = -987654321, max_idx; void input(int n) { if (n == 9) return; scanf("%d", &A[n]); if (A[n] > mx) { max_idx = n + 1; mx = A[n]; } input(n + 1); } int main() { input(0); printf("%d\n%d\n", mx, max_idx); return 0; }
