@@ -60,10 +60,8 @@ int main(){
 				for(ll k=0;k<8;k++){
 					brr[i][k]++;
 					brr[8][k]++;
-					brr[i][8]++;
 					brr[k][j]++;
 					brr[k][8]++;
-					brr[8][j]++;
 				}
 				brr[i][j]--;
 				brr[i][8]--;
