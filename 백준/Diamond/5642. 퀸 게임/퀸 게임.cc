@@ -36,7 +36,7 @@ ll gcd(ll a, ll b){return b?gcd(b,a%b):a;}
 ll lcm(ll a, ll b){if(a&&b)return a*(b/gcd(a,b)); return a+b;}
 ll powm(ll a, ll b, ll rem){ll p=1;for(;b;b/=2,a=(a*a)%rem)if(b&1)p=(p*a)%rem;return p;}
 
-const ll MAX=2501,MAXBS=20000;
+const ll MAX=2500,MAXBS=20000;
 
 ll mex(bitset<MAXBS>bs){
     for(int i=0;i<MAXBS;i++){
