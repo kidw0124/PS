@@ -1,4 +1,4 @@
-# [Platinum V] 6÷2(1+2) - 22527 
+# [Platinum IV] 6÷2(1+2) - 22527 
 
 [문제 링크](https://www.acmicpc.net/problem/22527) 
 
@@ -8,7 +8,7 @@
 
 ### 분류
 
-브루트포스 알고리즘(bruteforcing), 자료 구조(data_structures), 다이나믹 프로그래밍(dp), 해시를 사용한 집합과 맵(hash_set), 파싱(parsing), 재귀(recursion), 스택(stack), 문자열(string)
+브루트포스 알고리즘(bruteforcing), 자료 구조(data_structures), 분할 정복(divide_and_conquer), 다이나믹 프로그래밍(dp), 해시를 사용한 집합과 맵(hash_set), 파싱(parsing), 재귀(recursion), 스택(stack), 문자열(string), 트리를 사용한 집합과 맵(tree_set)
 
 ### 문제 설명
 
