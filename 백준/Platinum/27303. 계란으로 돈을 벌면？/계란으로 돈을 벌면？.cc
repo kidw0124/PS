@@ -47,6 +47,6 @@ int main() {
     ll i,j;
     ll k;
     cin>>k;
-    cout<<((k+2)%mod*powm(2,k-1,mod)+mod-k%mod-1)%mod;
+    cout<<((k+2)%mod*powm(2,k-1,mod)-k%mod-1)%mod;
 
 }
