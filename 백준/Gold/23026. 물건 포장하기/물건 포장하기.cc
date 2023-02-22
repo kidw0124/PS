@@ -49,7 +49,7 @@ void solve(){
 		cin>>v[i];
 		//cout<<v[i]<<'\n';
     }
-    vector<ll>rarr(b+1,-1),sum(n*b+1);
+    vector<ll>rarr(b+1,-1),sum(b+1);
     ll now=0,q=1,j=0;
     while(b-now>=v[0]&&rarr[now]==-1){
 		rarr[now]=j;
