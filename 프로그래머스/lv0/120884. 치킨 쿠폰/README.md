@@ -1,10 +1,10 @@
 # [level 0] 치킨 쿠폰 - 120884 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/120884?language=scala) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/120884?language=swift) 
 
 ### 성능 요약
 
-메모리: 91 MB, 시간: 0.27 ms
+메모리: 16.3 MB, 시간: 0.00 ms
 
 ### 구분
 
