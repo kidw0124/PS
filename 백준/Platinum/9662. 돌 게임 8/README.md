@@ -1,4 +1,4 @@
-# [Platinum I] 돌 게임 8 - 9662 
+# [Platinum II] 돌 게임 8 - 9662 
 
 [문제 링크](https://www.acmicpc.net/problem/9662) 
 
@@ -8,7 +8,7 @@
 
 ### 분류
 
-다이나믹 프로그래밍(dp), 게임 이론(game_theory)
+다이나믹 프로그래밍, 게임 이론
 
 ### 문제 설명
 
