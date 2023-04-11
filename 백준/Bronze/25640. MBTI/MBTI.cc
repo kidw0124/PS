@@ -1,15 +1,18 @@
-#include<bits/stdc++.h>
-using namespace std;
+#include<stdio.h>
+#include<string.h>
+
 int main(){
-    string s;
-    cin>>s;
-    int n,x=0;
-    cin>>n;
-    while(n--){
-        string t;
-        cin>>t;
-        if(s==t)x++;
+    int i,j;
+    char mbti[5];
+    char mbti2[5];
+    scanf("%s",mbti);
+    int n,ans=0;
+    scanf("%d",&n);
+    for(i=0;i<n;i++){
+        scanf("%s",mbti2);
+        if(strcmp(mbti,mbti2)==0){
+            ans++;
+        }
     }
-    cout<<x;
-    
+    printf("%d\n",ans);
 }
