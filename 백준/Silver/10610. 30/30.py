@@ -1,0 +1,1 @@
+print((lambda x:x%30and-1or x)(int(''.join(reversed(sorted(input()))))))
