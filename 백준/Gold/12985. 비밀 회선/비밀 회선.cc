@@ -22,7 +22,7 @@ void preprocess(){
 }
 
 const int TSIZE = 1<<20; // always 2^k form && n <= TSIZE
-ll M = 0;
+ll M = 50'000;
 struct segment{
     vector<ll> segtree, prop,dat;
     segment(){
@@ -86,8 +86,6 @@ void solve(ll testcase){
     vector<ll>cnt(M+1);
     for(i=0;i<n;i++){
         cin>>arr[i].first>>arr[i].second;
-        M=max(arr[i].second,M);
-        cnt.resize(max((ll)cnt.size(),M+1));
         cnt[arr[i].second]++;
     }
     segment A, B;
