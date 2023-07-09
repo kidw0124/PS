@@ -317,10 +317,9 @@ void solve(ll testcase){
     ll i, j, k;
     ll n,m,r;
     cin>>n;
-    auto cmp = [](ll&a, ll&b){
+    priority_queue<ll,vector<ll>, decltype([](ll&a, ll&b){
         return abs(a)==abs(b)?a>b:abs(a)>abs(b);
-    };
-    priority_queue<ll,vector<ll>, decltype(cmp)>pq;
+    })>pq;
     for(i=0;i<n;i++){
         cin>>r;
         if(r){
