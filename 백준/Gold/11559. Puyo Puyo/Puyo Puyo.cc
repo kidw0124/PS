@@ -7,66 +7,76 @@ typedef double ld;
 
 using ll = long long;
 using pld=pair<ld,ld>;
-using pll=pair<ll,ll>;
 using segment = pair<pld,pld>;
-const ll n=12,m=6;
-ll dx[]={0,0,1,-1},dy[]={1,-1,0,0};
-vector<string>arr(12),brr;
-void dfs(pll a,set<pll>&vis){
-    ll i,j;
-    auto [x,y]=a;
-    for(i=0;i<4;i++){
-        ll nx=x+dx[i],ny=y+dy[i];
-        if(nx<0||nx>=n||ny<0||ny>=m||vis.find({nx,ny})!=vis.end()||arr[x][y]!=arr[nx][ny])continue;
-        else {
-            vis.insert({nx,ny});
-            dfs({nx,ny},vis);
+
+void get_components(vector<string> board, vector<vector<pair<ll, ll>>>& components) {
+    vector<vector<bool>> vis(12, vector<bool>(6));
+    for(ll i = 0; i < 12; i++) {for(ll j = 0; j < 6; j++) if(board[i][j] == '.') vis[i][j] = true;}
+    ll dx[] = {1, -1, 0, 0}, dy[] = {0, 0, 1, -1};
+    for(ll i = 0; i < 12; i++) {
+        for (ll j = 0; j < 6; j++) {
+            if (vis[i][j]) continue;
+            vis[i][j] = true;
+            char target = board[i][j];
+            stack<pair<ll, ll>> stk;
+            stk.push({i, j});
+            vector<pair<ll, ll>> temp_arr;
+            while(stk.size()) {
+                auto [a, b] = stk.top();
+                stk.pop();
+                temp_arr.push_back({a, b});
+                for(ll k = 0; k < 4; k++) {
+                    if(a + dx[k] < 0 || a + dx[k] >= 12 || b + dy[k] < 0 || b + dy[k] >= 6) continue;
+                    if(vis[a + dx[k]][b + dy[k]] || board[a + dx[k]][b + dy[k]] != target) continue;
+                    vis[a + dx[k]][b + dy[k]] = true;
+                    stk.push({a + dx[k], b + dy[k]});
+                }
+            }
+            if(temp_arr.size() >= 4) components.push_back(temp_arr);
         }
     }
 }
 
-bool chk(){
-    ll i,j;
-    bool ret=0;
-    for(i=0;i<12;i++){
-        for(j=0;j<6;j++){
-            set<pll>vis;
-            if(arr[i][j]!='.')dfs({i,j},vis);
-            else continue;
-            if(vis.size()>=4){
-                ret=1;
-                for(auto [x,y]:vis){
-                    arr[x][y]='.';
+void erase_and_apply_gravity(vector<string>& board, vector<vector<pair<ll, ll>>>& components) {
+    for(auto component : components) {
+        for(auto [a, b] : component) {
+            board[a][b] = '.';
+        }
+    }
+    components = vector<vector<pair<ll, ll>>>();
+    for(ll j = 0; j < 6; j++) {
+        ll i;
+        for(i = 11; i >= 0; i--) {
+            if(board[i][j] == '.') break;
+        }
+        if(i > 0) {
+            ll moveto = i;
+            for (ll i = moveto - 1; i >= 0; i--) {
+                if (board[i][j] != '.') {
+                    board[moveto--][j] = board[i][j];
+                    board[i][j] = '.';
                 }
             }
         }
     }
-    return ret;
 }
 
 void solve()
 {
     ll i,j;
-    for(auto&k:arr)cin>>k;
-    ll ans=0;
-    while(chk()){
-//        for(auto&k:arr)cout<<k<<'\n';
-//        cout<<'\n';
-        ans++;
-        for(j=0;j<m;j++){
-            for(i=11;i>=0;i--){
-                if(arr[i][j]!='.'){
-                    ll k=i;
-                    while(k<11&&arr[k+1][j]=='.')swap(arr[k][j],arr[k+1][j]),k++;
-                }
+    string str;
+    vector<string> board(12);
+    for(i = 0; i < 12; i++) {cin >> str; board[i] = str;}
 
-            }
-        }
-//        cout<<'\n';
-//        for(auto&k:arr)cout<<k<<'\n';
-//        cout<<'\n';
+    ll ans = 0;
+    vector<vector<pair<ll, ll>>> components;
+    get_components(board, components);
+    while(components.size()) {
+        ans += 1;
+        erase_and_apply_gravity(board, components);
+        get_components(board, components);
     }
-    cout<<ans;
+    cout << ans;
 }
 
 int main()
