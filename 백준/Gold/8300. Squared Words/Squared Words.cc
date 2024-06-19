@@ -1,3 +1,6 @@
+#define private public
+#include<bitset>
+#undef private
 #include<bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -31,6 +34,23 @@ constexpr bool ddebug = true;
 constexpr bool ddebug = false;
 #endif
 #define debug if constexpr(ddebug) cout << "[DEBUG] "
+#include <x86intrin.h>
+
+template<size_t _Nw> void _M_do_sub(_Base_bitset<_Nw> &A, const _Base_bitset<_Nw> &B) {
+    for(int i=0, c=0; i<_Nw; i++)
+        c=_subborrow_u64(c, A._M_w[i], B._M_w[i], (unsigned long long*)&A._M_w[i]);
+}
+template<> void _M_do_sub(_Base_bitset<1> &A, const _Base_bitset<1> &B) {
+    A._M_w-=B._M_w;
+}
+template<size_t _Nb> bitset<_Nb>& operator-=(bitset<_Nb> &A, const bitset<_Nb> &B) {
+    _M_do_sub(A, B);
+    return A;
+}
+template<size_t _Nb> inline bitset<_Nb> operator-(const bitset<_Nb> &A, const bitset<_Nb> &B) {
+    bitset<_Nb> C(A);
+    return C-=B;
+}
 ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
 ll lcm(ll a, ll b)
 {
@@ -228,32 +248,99 @@ struct segment
 };
 
 const ll mod = 998244353;
+const int alpha_num=26;
+string str;
+const ll MX=3005;
+vector<bitset<MX>>S(alpha_num,bitset<MX>());
+ll n;
+ll get_lcs(int idx){
+    ll i,j;
+    bitset<MX>D,x;
+    for(i=0;i<n-idx;i++){
+        S[str[i+idx]-'a'][i]=1;
+    }
+    for(i=0;i<idx;i++){
+        x=D|S[str[i]-'a'];
+        D<<=1;
+        D|=1;
+        D=x&(x^(x-D));
+    }
+    for(i=0;i<n-idx;i++){
+        S[str[i+idx]-'a'][i]=0;
+    }
+    return D.count();
+}
+
+ll get_lcs2(string a, string b){
+    const ll MX=1005;
+    ll i,j;
+    vector<bitset<MX>>S(alpha_num,bitset<MX>());
+    bitset<MX>D,x;
+    for(i=0;i<b.size();i++){
+        S[b[i]-'a'][i]=1;
+    }
+    for(i=0;i<a.size();i++){
+        x=D|S[a[i]-'a'];
+        D<<=1;
+        D|=1;
+        D=x&(x^(x-D));
+    }
+    return D.count();
+}
+
+string get_lcs_string(string a, string b){
+    ll i,j;
+    vector<vector<ll>>D(a.size()+1,vector<ll>(b.size()+1));
+    for(i=1;i<=a.size();i++){
+        for(j=1;j<=b.size();j++){
+            if(a[i-1]==b[j-1]){
+                D[i][j]=D[i-1][j-1]+1;
+            }
+            else{
+                D[i][j]=max(D[i-1][j],D[i][j-1]);
+            }
+        }
+    }
+    string ans;
+    i=a.size();
+    j=b.size();
+    while(i>0&&j>0){
+        if(a[i-1]==b[j-1]){
+            ans+=a[i-1];
+            i--;
+            j--;
+        }
+        else if(D[i-1][j]>D[i][j-1]){
+            i--;
+        }
+        else{
+            j--;
+        }
+    }
+    reverse(ans.begin(),ans.end());
+    return ans;
+}
 
 void solve(ll testcase){
     int i, j, k;
-    ll n, m;
-    string str;
+//    cout<<"Case #"<<testcase<<": ";
     cin>>n>>str;
-    // get lcs of str[0..x-1] and str[x..n-1]
-    auto get_lcs=[&](int x){
-        ll i, j;
-        if(x==0 || x==n) return 0;
-        vector<vector<int>> dp(x+1,vector<int>(n-x+1,0));
-        for(i=1;i<=x;i++){
-            for(j=1;j<=n-x;j++){
-                dp[i][j]=max(dp[i-1][j],dp[i][j-1]);
-                if(str[i-1]==str[x+j-1]){
-                    dp[i][j]=max(dp[i][j],dp[i-1][j-1]+1);
-                }
-            }
-        }
-        return dp[x][n-x];
-    };
-    int ans=0;
+    n=str.size();
+    ll ans=0;
+    ll now=0;
     for(i=0;i<=n;i++){
-        ans=max(ans, get_lcs(i));
+        ll t=get_lcs(i);
+        debug<<i<<" "<<t<<endl;
+        if(t>ans){
+            ans=t;
+            now=i;
+        }
     }
-    cout<<n-2*ans<<endl;
+    cout<<n-ans*2<<endl;
+//    if(ans){
+//        string cc = get_lcs_string(str.substr(0,now),str.substr(now,n-now));
+//        cout<<cc<<cc<<endl;
+//    }
 }
 
 void setup() {
