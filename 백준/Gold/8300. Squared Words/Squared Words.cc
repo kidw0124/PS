@@ -250,7 +250,7 @@ struct segment
 const ll mod = 998244353;
 const int alpha_num=26;
 string str;
-const ll MX=3005;
+const ll MX=1005;
 vector<bitset<MX>>S(alpha_num,bitset<MX>());
 ll n;
 ll get_lcs(int idx){
