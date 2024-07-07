@@ -8,36 +8,32 @@ void solve() {
     ll n,p,h;
     cin>>n>>p>>h;
     p--,h--;
-    ll now=(1ll<<n)>>1;
-    vector<bool>arr(n);
+    vector<ll>arr(n);
     for(i=0;i<n;i++){
-        if(h/now){
-            arr[i]=1;
-            h%=now;
-            h=(now-1-h);
+        j=(1LL<<(n-i-1));
+        if(h&j){
+            arr[i]=1LL<<i;
+            h=(j<<1)-1-h;
         }
-        now>>=1;
     }
     reverse(arr.begin(), arr.end());
-    now=(1ll<<n)>>1;
     for(i=0;i<n;i++){
-        if(p/now==arr[i]){
+        j=(1LL<<(n-i-1));
+        if((p&j)==arr[i]){
             cout<<'R';
-            if(p/now) {
-                p %= now;
-                p = (now - 1 - p);
+            if(p&j) {
+                p=(j<<1)-1-p;
             }
         }
         else{
             cout<<'L';
-            if(p/now){
-                p%=now;
+            if(p&j){
+                p^=j;
             }
             else{
-                p=(now-1-p);
+                p=(j-1-p);
             }
         }
-        now>>=1;
     }
 }
 
