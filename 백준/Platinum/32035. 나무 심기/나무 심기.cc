@@ -23,37 +23,24 @@ void solve(){
                 i++;
             }
         }
-        else if(n%3==2){
+        else{
+            if(n%2==1&&n<11){
+                cout<<"NO\n";
+                return;
+            }
             if(n<8){
                 cout<<"NO\n";
                 return;
             }
-            arr[0][0]=arr[0][1]=arr[0][2]
-                    =arr[1][0]          =arr[1][2]
-                    =arr[2][0]=arr[2][1]=arr[2][2]='O';
-            i=3;
-            for(j=0;j<(n-8)/3;j++){
-                arr[i][i-1]='O';
-                arr[i][i]='O';
-                arr[i-1][i]='O';
-                i++;
+            int x=n%2;
+            if(x)n-=3;
+            for(i=0;i<(n-2)/2;i++){
+                arr[i][0]=arr[i][2]='O';
             }
-        }
-        else{
-            if(n<12){
-                cout<<"NO\n";
-                return;
-            }
-            arr[0][0]=arr[0][1]=arr[0][2]=arr[0][3]
-                    =arr[1][0]                  =arr[1][3]
-                    =arr[2][0]                  =arr[2][3]
-                    =arr[3][0]=arr[3][1]=arr[3][2]=arr[3][3]='O';
-            i=4;
-            for(j=0;j<(n-12)/3;j++){
-                arr[i][i-1]='O';
-                arr[i][i]='O';
-                arr[i-1][i]='O';
-                i++;
+            arr[0][1]='O';
+            arr[i-1][1]='O';
+            if(x){
+                arr[i][2]=arr[i][3]=arr[i-1][3]='O';
             }
         }
     }
