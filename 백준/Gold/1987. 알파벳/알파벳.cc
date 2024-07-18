@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-using ll = long long;
+using ll = int;
 using pll = pair<ll,ll>;
 using tlll = tuple<ll,ll,ll>;
 int main(){
