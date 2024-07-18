@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-using ll = int;
+using ll = long long;
 using pll = pair<ll,ll>;
 using tlll = tuple<ll,ll,ll>;
 int main(){
@@ -10,10 +10,10 @@ int main(){
     vector<string>str(n);
     for(i=0;i<n;i++)cin>>str[i];
     ll ans=0;
-    queue<pair<pll,ll>>q;
+    stack<pair<pll,ll>>q;
     q.push({{0,0},1<<(str[0][0]-'a')});
     while(!q.empty()) {
-        auto [pos, mask] = q.front();
+        auto [pos, mask] = q.top();
         q.pop();
         auto [x, y] = pos;
         ans = max(ans, (ll)__builtin_popcount(mask));
