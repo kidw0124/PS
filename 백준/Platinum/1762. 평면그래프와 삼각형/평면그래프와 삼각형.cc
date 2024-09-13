@@ -15,7 +15,7 @@ void solve() {
     int i,j,k;
     int n,m;
     cin>>n>>m;
-    int thres = 8000;
+    int thres = 100;
     ll ans=0;
     vector<bool>large(n+1);
     vector<vector<int>>adj(n+1),large_adj(n+1);
