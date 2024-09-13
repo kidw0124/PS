@@ -12,15 +12,15 @@ void preprocess(){
 }
 
 void solve() {
-    ll i,j,k;
-    ll n,m;
+    int i,j,k;
+    int n,m;
     cin>>n>>m;
-    ll thres = 5'000;
+    int thres = 5'000;
     ll ans=0;
     vector<bool>large(n+1);
-    vector<unordered_set<ll>>adj(n+1),large_adj(n+1);
+    vector<set<int>>adj(n+1),large_adj(n+1);
     for(i=0;i<m;i++){
-        ll a,b;
+        int a,b;
         cin>>a>>b;
         adj[a].insert(b);
         adj[b].insert(a);
