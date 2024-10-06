@@ -4,17 +4,21 @@
 
 ### 성능 요약
 
-메모리: 2020 KB, 시간: 0 ms
+메모리: 1112 KB, 시간: 0 ms
 
 ### 분류
 
-구현(implementation)
+구현
+
+### 제출 일자
+
+2023년 4월 11일 20:15:27
 
 ### 문제 설명
 
 <p>가로, 세로의 크기가 각각 100인 정사각형 모양의 흰색 도화지가 있다. 이 도화지 위에 가로, 세로의 크기가 각각 10인 정사각형 모양의 검은색 색종이를 색종이의 변과 도화지의 변이 평행하도록 붙인다. 이러한 방식으로 색종이를 한 장 또는 여러 장 붙인 후 색종이가 붙은 검은 영역의 넓이를 구하는 프로그램을 작성하시오.</p>
 
-<p style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/6000c956-1b07-4913-83c3-72eda18fa1d1/-/preview/" style="width: 268px; height: 215px;"></p>
+<p style="text-align: center;"><img alt="" src="https://u.acmicpc.net/6000c956-1b07-4913-83c3-72eda18fa1d1/Screen%20Shot%202021-06-23%20at%2012.27.04%20PM.png" style="width: 268px; height: 215px;"></p>
 
 <p>예를 들어 흰색 도화지 위에 세 장의 검은색 색종이를 그림과 같은 모양으로 붙였다면 검은색 영역의 넓이는 260이 된다.</p>
 
