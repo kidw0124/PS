@@ -1,4 +1,4 @@
-# [Bronze I] 단어순서 뒤집기 - 12605 
+# [Bronze II] 단어순서 뒤집기 - 12605 
 
 [문제 링크](https://www.acmicpc.net/problem/12605) 
 
@@ -8,7 +8,11 @@
 
 ### 분류
 
-자료 구조(data_structures), 파싱(parsing), 스택(stack), 문자열(string)
+자료 구조, 파싱, 스택, 문자열
+
+### 제출 일자
+
+2024년 10월 7일 22:28:07
 
 ### 문제 설명
 

@@ -1,37 +1,32 @@
-#include<bits/stdc++.h>
-#pragma warning(disable:4996)
-#pragma comment(linker, "/STACK:336777216")
+#include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
-typedef long long LL;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vl;
-#define pb(x) push_back(x)
-#define all(x) (x).begin(), (x).end()
-ll gcd(ll a, ll b){return b?gcd(b,a%b):a;}
-ll lcm(ll a, ll b){if(a&&b)return a*(b/gcd(a,b)); return a+b;}
-ll POW(ll a, ll b, ll rem){ll p=1;for(;b;b/=2,a=(a*a)% rem)if(b&1)p=(p*a)%rem;return p;}
+using ll = long long;
 
-int main(){
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    ll i,j;
+int main() {
+    cin.tie(0)->sync_with_stdio(0);
+    cout.tie(0);
     ll t;
     cin>>t;
-    string str;
-    getline(cin,str);
-    for(i=1;i<=t;i++){
-        cout<<"Case #"<<i<<": ";
-        vector<string>arr;
+    string line;
+    getline(cin, line);
+    for(int tc=0;tc<t;tc++){
+        cout<<"Case #"<<tc+1<<": ";
+        getline(cin, line); /// line="this is a test"
+//        stringstream ss(line); /// ss=line
         stringstream ss;
+        ss<<line; /// ss에 line을 출력(line->ss)
+        vector<string> tokens;
         string str;
-        getline(cin,str);
-        ss.str(str);
-        while(ss>>str)arr.pb(str);
-        reverse(all(arr));
-        for(auto k:arr)cout<<k<<' ';cout<<'\n';
+        while(ss>>str){ /// ss에 적혀있는걸 str으로 입력(ss->str)
+            tokens.push_back(str);
+        }
+        reverse(tokens.begin(),tokens.end());
+//        for(int i=0;i<tokens.size();i++){
+//            cout<<tokens[i]<<" ";
+//        }
+        for(string v:tokens){
+            cout<<v<<" ";
+        }
+        cout<<"\n";
     }
-    return 0;
 }
