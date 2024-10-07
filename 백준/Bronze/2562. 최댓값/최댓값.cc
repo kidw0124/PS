@@ -1,2 +1,17 @@
-#include <cstdio>
-int A[9], mx = -987654321, max_idx; void input(int n) { if (n == 9) return; scanf("%d", &A[n]); if (A[n] > mx) { max_idx = n + 1; mx = A[n]; } input(n + 1); } int main() { input(0); printf("%d\n%d\n", mx, max_idx); return 0; }
+#include<stdio.h>
+
+int main(){
+    int i;
+    int arr[9];
+    for(i=0;i<9;i++){
+        scanf("%d",&arr[i]);
+    }
+    int ans=arr[0],idx=1;
+    for(i=1;i<9;i++){
+        if(ans<arr[i]){
+            ans=arr[i];
+            idx=i+1;
+        }
+    }
+    printf("%d %d",ans,idx);
+}
