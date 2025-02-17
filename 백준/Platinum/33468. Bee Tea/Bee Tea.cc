@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld = long double;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#define endl '\n'
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+
+bool issquare(ll n){
+    ll st=sqrt(n+1e-12);
+    return st * st == n;
+}
+
+void solve(ll testcase){
+    ll n;
+    cin >> n;
+    if(issquare(n)){
+        cout << "-1\n";
+    }
+    else {
+        double sx=sqrt(n);
+        cout<<sx/(sx-1)<<'\n';
+    }
+
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+int main() {
+    setup();
+    int t = 1;
+    cin >> t;
+    cout<<fixed<<setprecision(9);
+    for (int testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
