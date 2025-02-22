@@ -1,0 +1,319 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#define endl '\n'
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+#include<bits/stdc++.h>
+using namespace std;
+mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+
+const int N = 3e5 + 9;
+
+const ll mod=2000000011;
+
+ll modsum(ll a,ll b){
+    return (a+b)%mod;
+}
+
+ll modmul(ll a,ll b){
+    return (a*b)%mod;
+}
+
+ll modpow(ll a,ll b){
+    ll res=1;
+    while(b){
+        if(b&1)res=modmul(res,a);
+        a=modmul(a,a);
+        b>>=1;
+    }
+    return res;
+}
+
+ll modinv(ll a){
+    return modpow(a,mod-2);
+}
+
+struct node {
+    node *l, *r;
+    int pos, key, mn, mx;
+    long long val, g;
+    node(int position, long long value) {
+        l = r = nullptr;
+        mn = mx = pos = position;
+        key = rnd();
+        val = g = value;
+    }
+    void pull() {
+        g = val;
+        if(l) g = modsum(g, l->g);
+        if(r) g = modsum(g, r->g);
+        mn = (l ? l->mn : pos);
+        mx = (r ? r->mx : pos);
+    }
+};
+//memory O(n)
+struct treap {
+    node *root;
+    treap() {
+        root = nullptr;
+    }
+    void split(node *t, int pos, node *&l, node *&r) {
+        if (t == nullptr) {
+            l = r = nullptr;
+            return;
+        }
+        if (t->pos < pos) {
+            split(t->r, pos, l, r);
+            t->r = l;
+            l = t;
+        } else {
+            split(t->l, pos, l, r);
+            t->l = r;
+            r = t;
+        }
+        t->pull();
+    }
+    node* merge(node *l, node *r) {
+        if (!l || !r) return l ? l : r;
+        if (l->key < r->key) {
+            l->r = merge(l->r, r);
+            l->pull();
+            return l;
+        }
+        r->l = merge(l, r->l);
+        r->pull();
+        return r;
+    }
+    bool find(int pos) {
+        node *t = root;
+        while (t) {
+            if (t->pos == pos) return true;
+            if (t->pos > pos) t = t->l;
+            else t = t->r;
+        }
+        return false;
+    }
+    void upd(node *t, int pos, long long val) {
+        if (t->pos == pos) {
+            t->val = val;
+            t->pull();
+            return;
+        }
+        if (t->pos > pos) upd(t->l, pos, val);
+        else upd(t->r, pos, val);
+        t->pull();
+    }
+    void insert(int pos, long long val) { //set a_pos = val
+        if (find(pos)) upd(root, pos, val);
+        else {
+            node *l, *r;
+            split(root, pos, l, r);
+            root = merge(merge(l, new node(pos, val)), r);
+        }
+    }
+    long long query(node *t, int st, int en) {
+        if (t->mx < st || en < t->mn) return 0;
+        if (st <= t->mn && t->mx <= en) return t->g;
+        long long ans = (st <= t->pos && t->pos <= en ? t->val : 0);
+        if (t->l) ans = modsum(ans, query(t->l, st, en));
+        if (t->r) ans = modsum(ans, query(t->r, st, en));
+        return ans;
+    }
+    long long query(int l, int r) {
+        if (!root) return 0;
+        return query(root, l, r);
+    }
+    void print(node *t) {
+        if (!t) return;
+        print(t->l);
+        cout << t->val << " ";
+        print(t->r);
+    }
+};
+//total memory along with treap = nlogn
+struct ST {
+    ST *l, *r;
+    treap t;
+    int b, e;
+    ST() {
+        l = r = nullptr;
+    }
+    ST(int st, int en) {
+        l = r = nullptr;
+        b = st, e = en;
+    }
+    void fix(int pos) {
+        long long val = 0;
+        if (l) val = modsum(val, l->t.query(pos, pos));
+        if (r) val = modsum(val, r->t.query(pos, pos));
+        t.insert(pos, val);
+    }
+    void upd(int x, int y, long long val) { //set a[x][y] = val
+        if (e < x || x < b) return;
+        if (b == e) {
+            t.insert(y, val);
+            return;
+        }
+        if (b != e) {
+            if (x <= (b + e) / 2) {
+                if (!l) l = new ST(b, (b + e) / 2);
+                l->upd(x, y, val);
+            } else {
+                if (!r) r = new ST((b + e) / 2 + 1, e);
+                r->upd(x, y, val);
+            }
+        }
+        fix(y);
+    }
+    long long query(int i, int j, int st, int en) { //sum of a[x][y] such that i <= x <= j && st <= y <= en
+        if (e < i || j < b) return 0;
+        if (i <= b && e <= j) return t.query(st, en);
+        long long ans = 0;
+        if(i>j || st>en)return 0;
+        if (l) ans = modsum(ans, l->query(i, j, st, en));
+        if (r) ans = modsum(ans, r->query(i, j, st, en));
+        return ans;
+    }
+};
+
+void solve(ll testcase){
+    int i,j,k;
+    int n,m;
+    int q;
+    cin >> q;
+    vector<int>xrr;
+    set<int>xset;
+    vector<vector<int>>query;
+    xset.insert(2e9);
+    xrr.push_back(2e9);
+    for(i=0;i<q;i++){
+        int ty;
+        cin>>ty;
+        if(ty==1){
+            int x,y,v;
+            cin>>x>>y>>v;
+            int mx= modpow(11,x+(ll)1e9),my=modpow(13,y+(ll)1e9);
+            int ofs=modmul(mx,my);
+            ofs=modmul(ofs,v);
+            if(ofs<0)ofs+=mod;
+            query.push_back({ty,x,y,v, ofs});
+            xrr.push_back(x);
+            xset.insert(x);
+        }
+        else{
+            int x1,y1,x2,y2,w,h;
+            cin>>x1>>y1>>x2>>y2>>w>>h;
+            query.push_back({ty,x1,y1,x2,y2,w,h});
+        }
+    }
+    sort(xrr.begin(),xrr.end());
+    xrr.erase(unique(xrr.begin(),xrr.end()),xrr.end());
+    map<int,int>mp;
+    n=xrr.size();
+    if(n==0){
+        for(auto q:query){
+            if(q[0]==2)cout<<"1\n";
+        }
+        return;
+    }
+    for(i=0;i<n;i++)mp[xrr[i]]=i;
+    ST t(0,n-1);
+    for(i=0;i<q;i++){
+        int ty=query[i][0];
+        if(ty == 1) {
+            ll x=mp[query[i][1]],y=query[i][2],v=query[i][3];
+            ll ofs=query[i][4];
+            t.upd(x, y, ofs);
+//            cout<<x<<" "<<y<<" "<<v<<" "<<ofs<<endl;
+//            cout<<t.query(x, x, 1645597554, 2171325508)<<endl;
+//            cout<<"==\n";
+        } else {
+            ll y1,y2,w,h;
+            y1=query[i][2],y2=query[i][4],w=query[i][5],h=query[i][6];
+//            y1+=1e9,y2+=1e9;
+            ll mx1=modpow(11,query[i][1]+(ll)1e9),my1=modpow(13,y1+(ll)1e9)
+            ,mx2=modpow(11,query[i][3]+(ll)1e9),my2=modpow(13,y2+(ll)1e9);
+            auto it1=xset.upper_bound(query[i][1]+w);
+            auto it2=xset.upper_bound(query[i][3]+w);
+            auto it_1=xset.lower_bound(query[i][1]);
+            auto it_2=xset.lower_bound(query[i][3]);
+
+            ll ofs1=modmul(mx1,my1),ofs2=modmul(mx2,my2);
+//            cout<<ofs1<<" "<<ofs2<<endl;
+//            cout<<x1<<" "<<*prev(it1)<<" "<<mp[*prev(it1)]<<" "<<y1<<" "<<y1+h<<endl;
+//            cout<<x2<<" "<<*prev(it2)<<" "<<mp[*prev(it2)]<<" "<<y2<<" "<<y2+h<<endl;
+//            cout<<t.query(x1, mp[*prev(it1)], y1, y1+h)<<" "<<t.query(x2, mp[*prev(it2)], y2, y2+h)<<endl;
+//            cout<<"==\n";
+            ll val1=t.query(mp[*it_1], mp[*prev(it1)], y1, y1+h);
+            val1=modmul(val1,modinv(ofs1));
+            ll val2=t.query(mp[*it_2], mp[*prev(it2)], y2, y2+h);
+            val2=modmul(val2,modinv(ofs2));
+            if(val1==val2)cout<<"1\n";
+            else cout<<"0\n";
+        }
+    }
+
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+#ifdef kidw0124
+    clock_t st = clock();
+#endif
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+#ifdef kidw0124
+    cout << "\n\nTime: " << (clock() - st) * 1.0 / CLOCKS_PER_SEC << "s\n";
+#endif
+    return 0;
+}
