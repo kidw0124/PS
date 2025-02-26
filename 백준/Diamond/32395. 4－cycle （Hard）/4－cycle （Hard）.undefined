@@ -261,13 +261,15 @@ void solve(ll testcase){
             if(chk_stol(i1,i2)){
                 for(auto& i3:adj[i2]){
                     if(chk_stol(i1,i3)){
-                        if(!cnt[i3])tmp.push_back(i3);
-                        ans=(ans+(cnt[i3]++))%mod;
+                        if(!cnt[i3]++)tmp.push_back(i3);
                     }
                 }
             }
         }
-        for(auto& i2:tmp)cnt[i2]=0;
+        for(auto& x:tmp) {
+            ans = (ans + (ll)cnt[x]*(cnt[x]-1)/2)%mod;
+            cnt[x] = 0;
+        }
     }
     cout << ans << '\n';
 
