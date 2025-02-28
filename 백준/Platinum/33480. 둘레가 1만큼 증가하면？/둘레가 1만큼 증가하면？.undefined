@@ -1,0 +1,185 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+using pll = pair<ll,ll>;
+using tlll = tuple<ll,ll,ll>;
+using ld = long double;
+
+#ifndef DLAS_HPP
+#include <array>
+#include <algorithm>
+#include <functional>
+#include <utility>
+
+template<class T, class U>
+T incMod(T x, U mod) {
+    x += 1;
+    return x == mod ? 0 : x;
+}
+
+template<class Domain, class CoDomain, size_t LEN = 5>
+std::pair<Domain, CoDomain> dlas(
+        std::function<CoDomain(Domain&)> f,
+        std::function<void(Domain&)> mutate,
+        Domain const& initial,
+        uint64_t maxIdleIters = -1ULL
+) {
+    std::array<Domain, 3> S{initial, initial, initial};
+    CoDomain curF = f(S[0]);
+    size_t curPos = 0;
+    size_t minPos = 0;
+
+    std::array<CoDomain, LEN> fitness;
+    std::fill(fitness.begin(), fitness.end(), curF);
+    CoDomain minF = curF;
+    size_t k = 0;
+
+    for (uint64_t idleIters = 0; idleIters < maxIdleIters; idleIters += 1) {
+        CoDomain prvF = curF;
+
+        size_t newPos = incMod(curPos, 3);
+        if (newPos == minPos) newPos = incMod(newPos, 3);
+
+        Domain& curS = S[curPos];
+        Domain& newS = S[newPos];
+
+        newS = curS;
+        mutate(newS);
+        CoDomain newF = f(newS);
+        if (newF < minF) {
+            idleIters = 0;
+            minPos = newPos;
+            minF = newF;
+        }
+        if (newF == curF || newF < *std::max_element(fitness.begin(), fitness.end())) {
+            curPos = newPos;
+            curF = newF;
+        }
+
+        CoDomain& fit = fitness[k];
+        if (curF > fit || curF < fit && curF < prvF) {
+            fit = curF;
+        }
+        k = incMod(k, LEN);
+    }
+    return { S[minPos], minF };
+}
+
+#define DLAS_HPP
+#endif
+
+void solve() {
+    ll n;
+    cin >> n;
+    vector<array<ll,4>>arr(100);
+    for(ll i=0;i<n;i++) {
+        for(ll j=0;j<4;j++) {
+            cin >> arr[i][j];
+        }
+    }
+    auto gen_rand = [](int l, int r) {
+        static random_device rnd;
+        static mt19937 rd(rnd());
+        return uniform_int_distribution(l, r)(rd);
+    };
+    auto calc = [&](const array<ld,4>&a,const array<ll,4>&b){
+        ll tmp=a[0]*b[0]+a[1]*b[1]+a[2]*b[2]+a[3]*b[3];
+        return tmp>0?1:tmp==0?0:-1;
+    };
+    auto f = [&](const array<ld,4>&plane){
+        array<ll,4>cnt1 = {0,0,0,0},cnt2 = {0,0,0,0};
+        for(ll i=0;i<n;i++){
+            if(calc(plane,arr[i]) > 0){
+                for(ll j=0;j<4;j++){
+                    cnt1[j] += arr[i][j];
+                }
+            }else if(calc(plane,arr[i]) < 0){
+                for(ll j=0;j<4;j++){
+                    cnt2[j] += arr[i][j];
+                }
+            }
+        }
+        ll ans = accumulate(cnt1.begin(),cnt1.end(),0ll,[&](ll a,ll b){
+            return a + b * b;
+        });
+        ans=max(ans,accumulate(cnt2.begin(),cnt2.end(),0ll,[&](ll a,ll b){
+            return a + b * b;
+        }));
+//        cout<< "[DEBUG] " << ans << "\n";
+//        for(ll i=0;i<n;i++){
+//            if(bs[i]){
+//                cout << i+1 << ' ';
+//            }
+//        }
+//        cout << '\n';
+        return -ans;
+    };
+    auto mutate = [&](array<ld,4>&plane){
+        plane[gen_rand(0,3)] *= gen_rand(0,1)?1.1:0.9;
+    };
+    auto [ans,val] = make_pair(array<ld,4>{0,0,0,0},1e18);
+    for(ll i=0;i<100;i++){
+        array<ld,4>tmp;
+        for(ll j=0;j<4;j++){
+            tmp[j] = gen_rand(-1'000'000,1'000'000)/1'000'000.0;
+        }
+        auto [cur,cur_val] = dlas<array<ld,4>,ld>(f,mutate,tmp,10'000);
+        if(cur_val < val){
+            val = cur_val;
+            ans = cur;
+        }
+    }
+
+    auto ftrack = [&](const array<ld,4>&plane){
+        array<ll,4>cnt1 = {0,0,0,0},cnt2 = {0,0,0,0};
+        for(ll i=0;i<n;i++){
+            if(calc(plane,arr[i]) > 0){
+                for(ll j=0;j<4;j++){
+                    cnt1[j] += arr[i][j];
+                }
+            }else if(calc(plane,arr[i]) < 0){
+                for(ll j=0;j<4;j++){
+                    cnt2[j] += arr[i][j];
+                }
+            }
+        }
+        ll ans1 = accumulate(cnt1.begin(),cnt1.end(),0ll,[&](ll a,ll b){
+            return a + b * b;
+        });
+        ll ans2 = accumulate(cnt2.begin(),cnt2.end(),0ll,[&](ll a,ll b){
+            return a + b * b;
+        });
+        vector<ll>vct;
+        if(ans1 > ans2){
+            for(ll i=0;i<n;i++){
+                if(calc(plane,arr[i]) > 0){
+                    vct.push_back(i+1);
+                }
+            }
+        }else{
+            for(ll i=0;i<n;i++){
+                if(calc(plane,arr[i]) < 0){
+                    vct.push_back(i+1);
+                }
+            }
+        }
+        cout << vct.size() << '\n';
+        for(ll i:vct){
+            cout << i << ' ';
+        }
+    };
+    ftrack(ans);
+}
+
+int main() {
+#ifdef kidw0124
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    cin.tie(0)->sync_with_stdio(0);
+#endif
+    int tc = 1;
+//     cin >> tc;
+    while (tc--) solve();
+}
