@@ -234,35 +234,28 @@ void solve(ll testcase){
         st.insert(i);
     }
     for(auto&k:arr)cin>>k,st.erase(k);
-    arr.insert(arr.begin(), 0);
     mint<>ans = 1;
     auto it=st.begin();
     ll cnt=0;
-//    if(n>=1000){
-//        for(auto k :st)cout<<k<<" ";
-//        cout<<"\n";
-//        return;
-//    }
-    if(*it==1){
-        cout<<0<<"\n";
-        return;
+    if(n!=m&&*it<arr[0]){
+        ans=0;
     }
     ll idx;
-    for(i=0;i<m;i++){
+    for(i=0;i<m-1;i++){
         if(arr[i]>arr[i+1]){
             break;
         }
     }
     idx=i;
     for(i=0;i<idx;i++){
+        cnt++;
         while(it!=st.end()&&*it<arr[i+1]){
             ans*=cnt;
             cnt++;
             it++;
         }
-        cnt++;
     }
-    cnt++;
+    cnt+=2;
     while(it!=st.end()){
         ans*=cnt;
         cnt++;
