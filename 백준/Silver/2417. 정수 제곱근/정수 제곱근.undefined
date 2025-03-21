@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+using ld = long double;
+constexpr ld eps=1e-12;
+
+int main(){
+	ll a;
+	cin>>a;
+	cout<<(a?(ll)ceil(sqrt(a-eps)):0);
+}
