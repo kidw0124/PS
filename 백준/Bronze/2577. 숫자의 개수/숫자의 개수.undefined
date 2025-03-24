@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+int main(){
+    ll a,b,c;
+    cin>>a>>b>>c;
+    string res=to_string(a*b*c);
+    for(int i=0;i<10;i++){
+        cout<<ranges::count(res,i+'0')<<' ';
+    }
+}
