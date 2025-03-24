@@ -17,15 +17,12 @@ ll n;
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0);
-    ll i,j;
-    vector<ll>arr(28);
-    for(auto&k:arr)cin>>k;
-    sort(all(arr));
-    for(i=1;i<=30;i++){
-        if(find(all(arr),i)==arr.end()){
-            cout<<i<<'\n';
-        }
-    }
+    ll i,j;vector<bool>arr(30);
+for(i=0;i<28;i++)cin>>j,arr[j-1]=true;
+auto it=ranges::find(arr,false);
+cout<<it-arr.begin()+1<<' ';
+it=find(it+1,arr.end(),false);
+cout<<it-arr.begin()+1<<' ';
 
     return 0;
 }
