@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+int main(){
+    ll n; cin>>n;
+    vector<ll>arr(n);
+    iota(arr.begin(),arr.end(),1);
+    cout<<accumulate(arr.begin(), arr.end(), 0)<<'\n'; // 0에 배열을 차례로 더해간다.
+cout<<accumulate(arr.begin(), arr.end(), 0)*accumulate(arr.begin(), arr.end(), 0)<<'\n';
+    cout<<accumulate(arr.begin(), arr.end(), 0,[](ll x, ll ai){return x+ai*ai*ai;});
+}
