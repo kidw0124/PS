@@ -14,5 +14,5 @@ int main() {
     }
     int v;
     cin >> v;
-    cout<<count(arr.begin(),arr.end(),v);
+    cout<<ranges::count(arr,v);
 }
