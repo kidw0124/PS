@@ -105,8 +105,8 @@ MatrixInt MatrixInt::multiply(const MatrixInt& other) {
     // Matrix multiplication
     MatrixInt result(matrix.size(), other.matrix[0].size());
     for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < other.matrix[0].size(); j++) {
             for (int k = 0; k < matrix[0].size(); k++) {
+        for (int j = 0; j < other.matrix[0].size(); j++) {
                 result.matrix[i][j] += matrix[i][k] * other.matrix[k][j];
             }
         }
