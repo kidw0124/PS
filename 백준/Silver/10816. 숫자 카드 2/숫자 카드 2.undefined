@@ -1,0 +1,22 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+constexpr ll MAXN=20'000'001;
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    ll i,j;
+    ll n;
+    cin>>n;
+    vector<ll>bs(MAXN);
+    for(i=0;i<n;i++){
+        cin>>j;
+        bs[j+MAXN/2]++;
+    }
+    cin>>n;
+    for(i=0;i<n;i++){
+        cin>>j;
+        cout<<bs[j+MAXN/2]<<' ';
+    }
+    return 0;
+}
