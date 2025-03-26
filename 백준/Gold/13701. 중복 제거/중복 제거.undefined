@@ -251,7 +251,7 @@ ostream &operator<<(ostream &os, const student &r){
 
 void solve(ll testcase){
     ll i, j;
-    vector<bool>bs(33554432);
+    bitset<33554432>bs;
     ll n;
     while(cin>>n){
         if(!bs[n])cout<<n<<' ', bs[n]=1;
