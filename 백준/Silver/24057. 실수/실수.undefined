@@ -223,21 +223,25 @@ void no() {
     cout << "No\n";
 }
 
-
 struct irrational{
     ll a,b,c,d;
-    irrational(ll a, ll b, ll c, ll d):a(a),b(b),c(c),d(d){
-        this->normalize(); // this-> 는 생략 가능
+    irrational(ll a, ll b, ll c, ll d)
+            :a(a),b(b),c(c),d(d){
+        ll g=gcd(a,gcd(b,c));
+        this->a/=g;
+        this->b/=g;
+        this->c/=g;
+        if(this->a<0)this->a=-this->a,this->b=-this->b,this->c=-this->c;
+        if(this->c==0)this->d=0;
     }
     irrational(): irrational(1,0,0,0){}
-    ~irrational() = default;
     void input(){
         cin>>a>>b>>c>>d;
     }
     void output(){
         cout<<a<<' '<<b<<' '<<c<<' '<<d;
     }
-    irrational operator+(const irrational &r)const{
+    irrational operator+(const irrational&r)const{
         return irrational(
                 a * r.a,
                 b * r.a + a * r.b,
@@ -246,9 +250,9 @@ struct irrational{
         );
     }
     irrational operator-()const{
-        return irrational(a, -b, -c, d);
+        return irrational(a,-b,-c,d);
     }
-    irrational operator-(const irrational &r)const{
+    irrational operator-(const irrational&r)const{
         return *this + (-r);
     }
     irrational operator*(const irrational &r)const{
@@ -267,13 +271,7 @@ struct irrational{
                 d
         );
     }
-    irrational operator/(const irrational &r)const;
-    void normalize(){
-        if(a<0)a=-a, b=-b, c=-c;
-        if(c==0)d=0;
-        ll g = gcd(gcd(a,abs(b)),abs(c));
-        a/=g, b/=g, c/=g;
-    }
+    irrational operator/(const irrational &)const;
 };
 
 irrational irrational::operator/(const irrational &r)const{
@@ -281,20 +279,21 @@ irrational irrational::operator/(const irrational &r)const{
 }
 
 void solve(ll testcase){
-    ll i, j, k;
-    ll n,m;
+    ll i, j;
+    ll n;
     irrational a,b;
-    a.input(), b.input();
+    a.input();
+    b.input();
     (a+b).output();
-    cout<<'\n';
+    cout << '\n';
     (a-b).output();
-    cout<<'\n';
+    cout << '\n';
     (a*b).output();
-    cout<<'\n';
+    cout << '\n';
     (a/b).output();
-    cout<<'\n';
-}
+    cout << '\n';
 
+}
 
 void setup() {
     if(ddebug) {
