@@ -302,14 +302,13 @@ void solve(ll testcase){
         for(auto x:str)s+=x-'0';
         return s;
     };
-    auto is_self=[&calc](ll n)->ll{
-        for(ll i=1;i<n;i++){
-            if(calc(i)==n)return i;
-        }
-        return 0;
-    };
+    vector<bool> is_self(n+1, true);
     for(i=1;i<=n;i++){
-        if(!is_self(i)){
+        ll x=calc(i);
+        if(x<=n)is_self[x]=false;
+    }
+    for(i=1;i<=n;i++){
+        if(is_self[i]){
             cout<<i<<'\n';
         }
     }
