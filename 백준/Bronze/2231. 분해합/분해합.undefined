@@ -298,7 +298,7 @@ void solve(ll testcase){
     cin>>n;
     for(i=1;i<n;i++){
         ll s=i;
-        for(auto x:to_string(i))s+=x-'0';
+        for(auto&x:to_string(i))s+=x-'0';
         if(s==n){
             cout<<i;
             return;
