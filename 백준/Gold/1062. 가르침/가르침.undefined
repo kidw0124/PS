@@ -231,20 +231,19 @@ void solve(ll testcase){
     ll n,m;
     cin>>n>>m;
     vector<string>str(n);
-    vector<bitset<26>>bitstr(n);
+    vector<ll>bitstr(n);
     for(i=0;i<n;i++){
         cin>>str[i];
         for(auto c:str[i]){
-            bitstr[i][c-'a']=1;
+            bitstr[i]|=1<<(c-'a');
         }
     }
     ll ans=0;
     for(i=0;i<(1<<26);i++){
-        bitset<26>bs(i);
-        if(bs.count()==m){
+        if(__builtin_popcountll(i)==m){
             ll cnt=0;
             for(j=0;j<n;j++){
-                if((bitstr[j]&bs)==bitstr[j]){
+                if((bitstr[j]&i)==bitstr[j]){
                     cnt++;
                 }
             }
