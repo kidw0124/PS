@@ -65,11 +65,10 @@ void solve(ll testcase){
     vector<vector<ll>>ans;
     iota(all(arr),1);
     do{
-        ans.push_back(vector<ll>(arr.begin(),arr.begin()+m));
-        // vector<>(it1,it2) : it1부터 it2 직전 원소를 복사해 새로운 vector를 만든다.
-    }while(next_permutation(all(arr)));
-    sort(all(ans));
-    ans.erase(unique(all(ans)),ans.end());
+      ans.push_back(vector<ll>(arr.begin(),arr.begin()+m));
+      while(next_permutation(arr.begin()+m,arr.end()));
+      prev_permutation(arr.begin()+m,arr.end());
+    }while(next_permutation(arr.begin(),arr.end()));
     for(auto &v:ans){
         for(auto &x:v){
             cout << x << ' ';
