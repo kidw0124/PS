@@ -1,0 +1,335 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+struct Segtree{
+    ll n;
+    vector<ll> data;
+    vector<ll> tree;
+    Segtree(ll n):n(n), data(n), tree(4*n) {}
+    void seg_init(ll idx, ll s, ll e){
+        if(s==e){
+            tree[idx]=data[s];
+            return;
+        }
+        ll mid=(s+e)>>1;
+        seg_init(idx<<1, s, mid);
+        seg_init(idx<<1|1, mid+1, e);
+        tree[idx]=tree[idx<<1]+tree[idx<<1|1];
+    }
+
+    void seg_update(ll idx, ll s, ll e, ll pos, ll val){
+        if(pos<s || pos>e)return; // 완벽히 노드 범위를 벗어남
+        if(s==e){
+            tree[idx]=val;
+            return;
+        }
+        ll mid=(s+e)>>1;
+        seg_update(idx<<1, s, mid, pos, val);
+        seg_update(idx<<1|1, mid+1, e, pos, val);
+        tree[idx]=tree[idx<<1]+tree[idx<<1|1];
+    }
+
+    ll seg_query(ll idx, ll s, ll e, ll l, ll r){
+        if(l>e || r<s)return 0; // 완벽히 노드 범위를 벗어남
+        if(l<=s && e<=r)return tree[idx]; // 완벽히 노드 범위에 포함됨
+        ll mid=(s+e)>>1;
+        return seg_query(idx<<1, s, mid, l, r)
+                +seg_query(idx<<1|1, mid+1, e, l, r);
+    }
+
+    void init(const vector<ll>&arr){
+        data=arr;
+        seg_init(1, 0, n-1);
+    }
+
+    void update(ll pos, ll val){
+        seg_update(1, 0, n-1, pos, val);
+    }
+
+    ll query(ll l, ll r){
+        if(l>r)return 0;
+        else return seg_query(1, 0, n-1, l, r);
+    }
+};
+
+
+struct DynamicSegtree{
+    ll n;
+    vector<ll>data;
+    struct Node{
+        ll s,e;
+        ll val;
+        Node *left, *right;
+        Node():s(1e18),e(-1),val(0),left(nullptr),right(nullptr){}
+        Node(ll s, ll e):s(s), e(e), val(0),
+                        left(&DynamicSegtree::black_node), right(&DynamicSegtree::black_node) {}
+        ~Node(){
+            if(left!=&DynamicSegtree::black_node)delete left;
+            if(right!=&DynamicSegtree::black_node)delete right;
+        }
+    };
+    static Node black_node;
+    Node* root;
+    DynamicSegtree(ll n):n(n), data(n) {
+        root=new Node(0,n-1);
+    }
+    ~DynamicSegtree(){
+        delete root;
+    }
+    void seg_init(Node* node){
+        if(node->s==node->e){
+            node->val=data[node->s];
+            return;
+        }
+        ll mid=(node->s+node->e)>>1;
+        node->left=new Node(node->s,mid);
+        node->right=new Node(mid+1,node->e);
+        seg_init(node->left);
+        seg_init(node->right);
+        node->val = node->left->val + node->right->val;
+    }
+    void seg_update(Node* node, ll pos, ll val){
+        if(node->s>pos || node->e<pos)return;
+        if(node->s==node->e){
+            node->val=val;
+            return;
+        }
+        seg_update(node->left, pos, val);
+        seg_update(node->right, pos, val);
+        node->val=node->left->val+node->right->val;
+    }
+    ll query(Node* node, ll l, ll r){
+        if(node->s>r || node->e<l)return 0;
+        if(l<=node->s && node->e<=r)return node->val;
+        return query(node->left, l, r) + query(node->right, l, r);
+    }
+    void init(const vector<ll>&arr){
+        assert(arr.size()==n);
+        data=arr;
+        seg_init(root);
+    }
+    void update(ll pos, ll val){
+        if(pos<0 || pos>=n)return;
+        seg_update(root, pos, val);
+    }
+    ll query(ll l, ll r){
+        if(l>r)return 0;
+        return query(root, l, r);
+    }
+};
+DynamicSegtree::Node DynamicSegtree::black_node = DynamicSegtree::Node();
+
+struct DynamicSegtree2d{
+    ll n,m;
+    vector<vector<ll>> data;
+    struct Node{
+        ll sx,sy,ex,ey;
+        ll val;
+        vector<Node*> child;
+        Node():sx(1e18),sy(1e18),ex(-1),ey(-1),val(0){}
+        Node(ll sx, ll sy, ll ex, ll ey)
+            :sx(sx),sy(sy),ex(ex),ey(ey),val(0),child(4, &DynamicSegtree2d::black_node) {}
+        ~Node(){
+            for(auto&x:child){
+                if(x!=&DynamicSegtree2d::black_node)delete x;
+            }
+        }
+    };
+    Node* root;
+    static Node black_node;
+
+    DynamicSegtree2d(ll n, ll m):n(n),m(m),data(n, vector<ll>(m)) {
+        root = new Node(0, 0, n - 1, m - 1);
+    }
+    ~DynamicSegtree2d(){
+        delete root;
+    }
+
+    void seg_init(Node* node){
+        if(node->sx>node->ex || node->sy>node->ey)return;
+        if(node->sx==node->ex && node->sy==node->ey){
+            node->val=data[node->sx][node->sy];
+            return;
+        }
+        ll midx=(node->sx+node->ex)>>1;
+        ll midy=(node->sy+node->ey)>>1;
+        node->child[0]=new Node(node->sx,node->sy,midx,midy);
+        node->child[1]=new Node(node->sx,midy+1,midx,node->ey);
+        node->child[2]=new Node(midx+1,node->sy,node->ex,midy);
+        node->child[3]=new Node(midx+1,midy+1,node->ex,node->ey);
+        for(auto&x:node->child)seg_init(x);
+        for(auto&x:node->child)node->val+=x->val;
+    }
+    void seg_update(Node* node, ll x, ll y, ll val){
+        if(node->sx>x || node->ex<x || node->sy>y || node->ey<y
+            || node->sx>node->ex || node->sy>node->ey)return;
+        if(node->sx==node->ex && node->sy==node->ey){
+            node->val=val;
+            return;
+        }
+        for(auto&chi:node->child)seg_update(chi, x, y, val);
+        node->val=0;
+        for(auto&x:node->child)node->val+=x->val;
+    }
+    ll seg_query(Node* node, ll sx, ll sy, ll ex, ll ey){
+        if(node->sx>ex || node->ex<sx || node->sy>ey || node->ey<sy
+            || node->sx>node->ex || node->sy>node->ey)return 0;
+        if(sx<=node->sx && node->ex<=ex && sy<=node->sy && node->ey<=ey)return node->val;
+        ll ret=0;
+        for(auto&x:node->child)ret+=seg_query(x, sx, sy, ex, ey);
+        return ret;
+    }
+    void init(const vector<vector<ll>>&arr){
+        assert(arr.size()==n && arr[0].size()==m);
+        data=arr;
+        seg_init(root);
+    }
+    void update(ll x, ll y, ll val){
+        if(x<0 || x>=n || y<0 || y>=m)return;
+        seg_update(root, x, y, val);
+    }
+    ll query(ll sx, ll sy, ll ex, ll ey){
+        if(sx>ex || sy>ey)return 0;
+        return seg_query(root, sx, sy, ex, ey);
+    }
+};
+DynamicSegtree2d::Node DynamicSegtree2d::black_node = DynamicSegtree2d::Node();
+
+// Call with size of the grid
+// Example: fenwick_tree_2d<int> Tree(n+1,m+1) for n x m grid indexed from 1
+template <class T>struct fenwick_tree_2d
+{
+    vector<vector<T>> x;
+    fenwick_tree_2d(int n, int m) : x(n, vector<T>(m)) { }
+    void add(int k1, int k2, T a) { // x[k] += a
+        for (; k1 < x.size(); k1 |= k1 + 1)
+            for (int k = k2; k < x[k1].size(); k |= k + 1) x[k1][k] += a;
+    }
+    T sum(int k1, int k2) { // return x[0] + ... + x[k]
+        T s = 0;
+        for (; k1 >= 0; k1 = (k1 & (k1 + 1)) - 1)
+            for (int k = k2; k >= 0; k = (k & (k + 1)) - 1) s += x[k1][k];
+        return s;
+    }
+};
+
+void solve(ll testcase){
+    ll i,j,k;
+    ll n,m;
+    cin >> n >> m;
+    vector<vector<ll>> arr(n+1, vector<ll>(n+1));
+    for(i=1;i<=n;i++){
+        for(j=1;j<=n;j++){
+            cin >> arr[i][j];
+        }
+    }
+    /// init = build
+    fenwick_tree_2d<ll> seg(n+2,n+2);
+    for(i=1;i<=n;i++){
+        for(j=1;j<=n;j++){
+            seg.add(i,j,arr[i][j]);
+        }
+    }
+    /// query
+//    cout<<sizeof seg<<'\n';
+    for(i=0;i<m;i++){
+        ll type,x,y,z,w;
+        cin >> type >> x >> y >> z;
+        ll dif;
+        switch (type) {
+            case 0:
+                dif=z-arr[x][y];
+                arr[x][y]=z;
+                seg.add(x,y,dif);
+                break;
+            case 1:
+                cin >> w;
+                cout << seg.sum(z,w)-seg.sum(x-1,w)-seg.sum(z,y-1)+seg.sum(x-1,y-1) << '\n';
+                break;
+        }
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
