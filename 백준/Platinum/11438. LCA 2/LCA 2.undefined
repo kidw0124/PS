@@ -1,0 +1,146 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+void solve(ll testcase){
+    ll i,j,k;
+    ll n,m;
+    cin>>n;
+    vector<vector<ll>> adj(n+1);
+    vector<vector<ll>>par(n+1,vector<ll>(61));
+    vector<ll>dep(n+1);
+    for(i=0;i<n-1;i++){
+        ll a,b;
+        cin>>a>>b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    par[1][0]=1;dep[1]=1;
+    function<void(ll)> dfs=[&par,&adj,&dfs,&dep](ll node){
+        for(auto v:adj[node]){
+            if(par[node][0]!=v){
+                par[v][0]=node;
+                dep[v]=dep[node]+1;
+                dfs(v);
+            }
+        }
+    };
+    dfs(1);
+    for(j=1;j<=60;j++){
+        for(i=1;i<=n;i++){
+            par[i][j]=par[par[i][j-1]][j-1];
+        }
+    }
+    ll q;
+    cin>>q;
+    function<ll(ll,ll)> lca=[&par,&dep](ll a, ll b){
+        if(dep[a]<dep[b])swap(a,b);
+        ll diff=dep[a]-dep[b];
+        ll tmp=0;
+        while(diff){
+            if(diff&1)a=par[a][tmp];
+            diff>>=1;
+            tmp++;
+        }
+        while(a!=b){
+            ll i;
+            for(i=60;i>=0;i--){
+                if(par[a][i]!=par[b][i]){
+                    a=par[a][i];
+                    b=par[b][i];
+                }
+            }
+            a=par[a][0];
+            b=par[b][0];
+        }
+        return a;
+    };
+    while(q--){
+        ll u,v;
+        cin>>u>>v;
+        cout<<lca(u,v)<<'\n';
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
