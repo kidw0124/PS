@@ -1,0 +1,166 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+void solve(ll testcase){
+    ll i,j,k;
+    ll n,m;
+    cin>>n>>m;
+    vector<vector<pll>>adj(n);
+    vector<ll>sz(n),par(n);
+    for(i=0;i<n-1;i++){
+        ll u,v,w;
+        cin>>u>>v>>w;
+        adj[u].push_back({v,w});
+        adj[v].push_back({u,w});
+    }
+    function<ll(ll)> dfs_sz=[&](ll now){
+        sz[now]=1;
+        for(auto [nxt,w]:adj[now]){
+            if(nxt==par[now])continue;
+            par[nxt]=now;
+            sz[now]+=dfs_sz(nxt);
+        }
+        return sz[now];
+    };
+    dfs_sz(0);
+    function<ll(ll)> find_centroid=[&](ll now){
+        ll _n=sz[now];
+        for(auto [nxt,_]:adj[now]){
+            if(nxt==par[now])continue;
+            if(sz[nxt]*2>n){
+                sz[now]-=sz[nxt];
+                sz[nxt]=_n;
+                par[nxt]=par[now];
+                par[now]=nxt;
+                return find_centroid(nxt);
+            }
+        }
+        return now;
+    };
+    ll ans=1e18;
+    function<void(ll,ll)> dfs=[&](ll now,ll prv){
+        now=find_centroid(now);
+        vector<map<ll,ll>>mp; // mp[a][b]=j : a번째 자식의 subtree 중 cost가 b인 정점의 개수는 j개
+        map<ll,ll>tmp;
+        tmp[0]=0;
+        mp.push_back(tmp);
+        for(auto [nxt,w]:adj[now]) {
+            if(nxt==prv)continue;
+            map<ll,ll>tmp;// tmp[i]=j : cost가 i인 최소 정점의 개수는 j개
+            function<void(ll,ll,ll)>dfs2=[&](ll nnow, ll sumcost, ll cnt){
+                if(tmp.find(sumcost)==tmp.end()){
+                    tmp[sumcost]=cnt;
+                }
+                else{
+                    tmp[sumcost]=min(tmp[sumcost],cnt);
+                }
+                for(auto [nnxt,ww]:adj[nnow]){
+                    if(nnxt==par[nnow])continue;
+                    dfs2(nnxt,sumcost+ww,cnt+1);
+                }
+            };
+            dfs2(nxt,w,1);
+            mp.push_back(tmp);
+        }
+        for(i=0;i<mp.size();i++){
+            for(auto [cost1,cnt1]:mp[i]){
+                ll cost2=m-cost1;
+                for(j=i+1;j<mp.size();j++){
+                    if(mp[j].find(cost2)==mp[j].end())continue;
+                    else ans=min(ans,cnt1+mp[j][cost2]);
+                }
+            }
+        }
+        for(auto [nxt,w]:adj[now]){
+            if(nxt==prv)continue;
+            dfs(nxt,now);
+        }
+    };
+    dfs(0,-1);
+    if(ans==1e18)cout<<-1;
+    else cout<<ans;
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
