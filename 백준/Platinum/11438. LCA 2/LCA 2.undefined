@@ -97,7 +97,6 @@ void solve(ll testcase){
             diff>>=1;
             tmp++;
         }
-        while(a!=b){
             ll i;
             for(i=60;i>=0;i--){
                 if(par[a][i]!=par[b][i]){
@@ -105,9 +104,9 @@ void solve(ll testcase){
                     b=par[b][i];
                 }
             }
+            if(a==b)return a;
             a=par[a][0];
             b=par[b][0];
-        }
         return a;
     };
     while(q--){
