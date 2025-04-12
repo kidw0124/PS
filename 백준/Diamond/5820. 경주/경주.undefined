@@ -57,11 +57,16 @@ ll modinverse(ll a, ll m)
     return (extended_gcd(a, m).first % m + m) % m;
 }
 
+constexpr ll INF = 1e18;
 void solve(ll testcase){
     ll i,j,k;
     ll n,m;
     cin>>n>>m;
     vector<vector<pll>>adj(n);
+    ll ans=INF;
+    vector<ll>bs(m+1,INF),tmp(m+1,INF);
+    unordered_set<ll>vis,tmpvis;
+    vector<ll>centvis(n+1);
     vector<ll>sz(n),par(n);
     for(i=0;i<n-1;i++){
         ll u,v,w;
@@ -72,7 +77,7 @@ void solve(ll testcase){
     function<ll(ll)> dfs_sz=[&](ll now){
         sz[now]=1;
         for(auto [nxt,w]:adj[now]){
-            if(nxt==par[now])continue;
+            if(nxt==par[now]||centvis[nxt])continue;
             par[nxt]=now;
             sz[now]+=dfs_sz(nxt);
         }
@@ -82,8 +87,8 @@ void solve(ll testcase){
     function<ll(ll)> find_centroid=[&](ll now){
         ll _n=sz[now];
         for(auto [nxt,_]:adj[now]){
-            if(nxt==par[now])continue;
-            if(sz[nxt]*2>n){
+            if(nxt==par[now]||centvis[nxt])continue;
+            if(sz[nxt]*2>_n){
                 sz[now]-=sz[nxt];
                 sz[nxt]=_n;
                 par[nxt]=par[now];
@@ -93,47 +98,35 @@ void solve(ll testcase){
         }
         return now;
     };
-    ll ans=1e18;
+    function<void(ll,ll,ll)>dfs2=[&](ll nnow, ll sumcost, ll cnt){;
+        if(sumcost>m)return;
+        tmpvis.insert(sumcost);
+        tmp[sumcost]=min(tmp[sumcost],cnt);
+        ans=min(ans,cnt+bs[m-sumcost]);
+        for(auto [nnxt,ww]:adj[nnow]){
+            if(nnxt==par[nnow]||centvis[nnxt])continue;
+            dfs2(nnxt,sumcost+ww,cnt+1);
+        }
+    };
     function<void(ll,ll)> dfs=[&](ll now,ll prv){
         now=find_centroid(now);
-        vector<map<ll,ll>>mp; // mp[a][b]=j : a번째 자식의 subtree 중 cost가 b인 정점의 개수는 j개
-        map<ll,ll>tmp;
-        tmp[0]=0;
-        mp.push_back(tmp);
+        centvis[now]=1;
         for(auto [nxt,w]:adj[now]) {
-            if(nxt==prv)continue;
-            map<ll,ll>tmp;// tmp[i]=j : cost가 i인 최소 정점의 개수는 j개
-            function<void(ll,ll,ll)>dfs2=[&](ll nnow, ll sumcost, ll cnt){
-                if(tmp.find(sumcost)==tmp.end()){
-                    tmp[sumcost]=cnt;
-                }
-                else{
-                    tmp[sumcost]=min(tmp[sumcost],cnt);
-                }
-                for(auto [nnxt,ww]:adj[nnow]){
-                    if(nnxt==par[nnow])continue;
-                    dfs2(nnxt,sumcost+ww,cnt+1);
-                }
-            };
+            if(nxt==prv||centvis[nxt])continue;
             dfs2(nxt,w,1);
-            mp.push_back(tmp);
+            for(auto X:tmpvis)bs[X]=min(bs[X],tmp[X]),tmp[X]=INF,vis.insert(X);
+            tmpvis.clear();
         }
-        for(i=0;i<mp.size();i++){
-            for(auto [cost1,cnt1]:mp[i]){
-                ll cost2=m-cost1;
-                for(j=i+1;j<mp.size();j++){
-                    if(mp[j].find(cost2)==mp[j].end())continue;
-                    else ans=min(ans,cnt1+mp[j][cost2]);
-                }
-            }
-        }
+        for(auto X:vis)bs[X]=INF;
+        bs[0]=0;
+        vis.clear();
         for(auto [nxt,w]:adj[now]){
-            if(nxt==prv)continue;
+            if(nxt==prv||centvis[nxt])continue;
             dfs(nxt,now);
         }
     };
     dfs(0,-1);
-    if(ans==1e18)cout<<-1;
+    if(ans==INF)cout<<-1;
     else cout<<ans;
 }
 
