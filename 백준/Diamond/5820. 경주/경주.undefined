@@ -57,15 +57,15 @@ ll modinverse(ll a, ll m)
     return (extended_gcd(a, m).first % m + m) % m;
 }
 
-constexpr ll INF = 1e18;
+constexpr ll INF = INT_MAX;
 void solve(ll testcase){
     ll i,j,k;
     ll n,m;
     cin>>n>>m;
     vector<vector<pll>>adj(n);
     ll ans=INF;
-    vector<ll>bs(m+1,INF),tmp(m+1,INF);
-    unordered_set<ll>vis,tmpvis;
+//    vector<ll>bs(m+1,INF),tmp(m+1,INF);
+    gp_hash_table<ll,ll>bs,tmp;
     vector<ll>centvis(n+1);
     vector<ll>sz(n),par(n);
     for(i=0;i<n-1;i++){
@@ -99,27 +99,31 @@ void solve(ll testcase){
         return now;
     };
     function<void(ll,ll,ll)>dfs2=[&](ll nnow, ll sumcost, ll cnt){;
-        if(sumcost>m)return;
-        tmpvis.insert(sumcost);
-        tmp[sumcost]=min(tmp[sumcost],cnt);
-        ans=min(ans,cnt+bs[m-sumcost]);
+        if(sumcost>m ||cnt>=ans)return;
+        if(tmp.find(sumcost)==tmp.end() ||tmp[sumcost]>cnt){
+            tmp[sumcost]=cnt;
+            if(bs.find(m-sumcost)!=bs.end())ans=min(ans,cnt+bs[m-sumcost]);
+        }
         for(auto [nnxt,ww]:adj[nnow]){
             if(nnxt==par[nnow]||centvis[nnxt])continue;
             dfs2(nnxt,sumcost+ww,cnt+1);
         }
     };
     function<void(ll,ll)> dfs=[&](ll now,ll prv){
+        bs[0]=0;
         now=find_centroid(now);
         centvis[now]=1;
         for(auto [nxt,w]:adj[now]) {
             if(nxt==prv||centvis[nxt])continue;
             dfs2(nxt,w,1);
-            for(auto X:tmpvis)bs[X]=min(bs[X],tmp[X]),tmp[X]=INF,vis.insert(X);
-            tmpvis.clear();
+            for(auto [c,cnt]:tmp){
+                if(bs.find(c)==bs.end() || bs[c]>cnt){
+                    bs[c]=cnt;
+                }
+            }
+            tmp.clear();
         }
-        for(auto X:vis)bs[X]=INF;
-        bs[0]=0;
-        vis.clear();
+        bs.clear();
         for(auto [nxt,w]:adj[now]){
             if(nxt==prv||centvis[nxt])continue;
             dfs(nxt,now);
