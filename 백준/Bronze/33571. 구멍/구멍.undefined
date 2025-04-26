@@ -1,0 +1,27 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str;
+    getline(cin,str);
+    vector<int>up({
+        1,2,0,1,0,
+        0,0,0,0,0,
+        0,0,0,0,1,
+        1,1,1,0,0,
+        0,0,0,0,0,0
+    });
+    vector<int>lo({
+        1,1,0,1,1,
+        0,1,0,0,0,
+        0,0,0,0,1,
+        1,1,0,0,0,
+        0,0,0,0,0,0
+    });
+    int ans=0;
+    for(auto &c:str){
+        if(c=='@')ans++;
+        else if(islower(c))ans+=lo[c-'a'];
+        else if(isupper(c))ans+=up[c-'A'];
+    }
+    cout<<ans;
+}
