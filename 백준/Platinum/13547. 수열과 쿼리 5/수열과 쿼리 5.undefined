@@ -78,7 +78,10 @@ void solve(ll testcase){
         q[i].idx = i;
     }
     sort(q.begin(), q.end(), [&sn](query&a, query&b){
-        if(a.l/sn==b.l/sn)return a.r<b.r;
+        if(a.l/sn==b.l/sn){
+            if(a.l/sn&1)return a.r<b.r;
+            else return a.r>b.r;
+        }
         else return a.l<b.l;
     });
     vector<ll>cnt(1'000'005);
@@ -96,14 +99,6 @@ void solve(ll testcase){
         add(arr[i]);
     }
     for(i=0;i<m;i++){
-        while(s<q[i].l){
-            del(arr[s]);
-            s++;
-        }
-        while(e>q[i].r){
-            del(arr[e]);
-            e--;
-        }
         while(s>q[i].l){
             s--;
             add(arr[s]);
@@ -111,6 +106,14 @@ void solve(ll testcase){
         while(e<q[i].r){
             e++;
             add(arr[e]);
+        }
+        while(s<q[i].l){
+            del(arr[s]);
+            s++;
+        }
+        while(e>q[i].r){
+            del(arr[e]);
+            e--;
         }
         q[i].ans=ans;
     }
