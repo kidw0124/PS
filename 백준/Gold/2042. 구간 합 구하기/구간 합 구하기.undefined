@@ -56,81 +56,53 @@ ll modinverse(ll a, ll m)
 {
     return (extended_gcd(a, m).first % m + m) % m;
 }
-
-struct Segtree{
-    ll n;
-    vector<ll> data;
-    vector<ll> tree;
-    Segtree(ll n):n(n), data(n), tree(4*n) {}
-    void seg_init(ll idx, ll s, ll e){
-        if(s==e){
-            tree[idx]=data[s];
-            return;
-        }
-        ll mid=(s+e)>>1;
-        seg_init(idx<<1, s, mid);
-        seg_init(idx<<1|1, mid+1, e);
-        tree[idx]=tree[idx<<1]+tree[idx<<1|1];
-    }
-
-    void seg_update(ll idx, ll s, ll e, ll pos, ll val){
-        if(pos<s || pos>e)return; // 완벽히 노드 범위를 벗어남
-        if(s==e){
-            tree[idx]=val;
-            return;
-        }
-        ll mid=(s+e)>>1;
-        seg_update(idx<<1, s, mid, pos, val);
-        seg_update(idx<<1|1, mid+1, e, pos, val);
-        tree[idx]=tree[idx<<1]+tree[idx<<1|1];
-    }
-
-    ll seg_query(ll idx, ll s, ll e, ll l, ll r){
-        if(l>e || r<s)return 0; // 완벽히 노드 범위를 벗어남
-        if(l<=s && e<=r)return tree[idx]; // 완벽히 노드 범위에 포함됨
-        ll mid=(s+e)>>1;
-        return seg_query(idx<<1, s, mid, l, r)
-                +seg_query(idx<<1|1, mid+1, e, l, r);
-    }
-
-    void init(const vector<ll>&arr){
-        data=arr;
-        seg_init(1, 0, n-1);
-    }
-
-    void update(ll pos, ll val){
-        seg_update(1, 0, n-1, pos, val);
-    }
-
-    ll query(ll l, ll r){
-        if(l>r)return 0;
-        else return seg_query(1, 0, n-1, l, r);
-    }
-};
-
-
 void solve(ll testcase){
     ll i,j;
     ll n,m,k;
     cin >> n >> m >> k;
     vector<ll>arr(n);
     for(auto&x:arr)cin>>x;
-    /// init = build
-    Segtree seg(n);
-    seg.init(arr);
+    ll sn=sqrt(n);
+    arr.resize(n+sn);
+    vector<ll>child(sn+1);
+    child.resize(sn+1);
+    for(i=0;i<sn+1;i++){
+        for(j=i*sn;j<(i+1)*sn;j++){
+            child[i]+=arr[j];
+        }
+    }
     /// query
     ll q=m+k;
     for(i=0;i<q;i++){
-        ll type,x,y;
+        ll type,x,y,dif;
         cin >> type >> x >> y;
+        x--;
         switch (type) {
             case 1:
-                /// arr[x]<-y
-                seg.update(x-1,y);
+                dif=y-arr[x];
+                child[x/sn]+=dif;
+                arr[x]=y;
                 break;
             case 2:
                 /// arr[x]~arr[y]
-                cout << seg.query(x-1,y-1) << '\n';
+                y--;
+                ll sum=0;
+                if(x/sn==y/sn){
+                    for(j=x;j<=y;j++){
+                        sum+=arr[j];
+                    }
+                }else{
+                    for(j=x/sn+1;j<y/sn;j++){
+                        sum+=child[j];
+                    }
+                    for(j=x;j<(x/sn+1)*sn;j++){
+                        sum+=arr[j];
+                    }
+                    for(j=(y/sn)*sn;j<=y;j++){
+                        sum+=arr[j];
+                    }
+                }
+                cout<<sum<<'\n';
                 break;
         }
     }
