@@ -1,0 +1,176 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+template<typename T> using ordered_set
+    = tree<T, null_type, less<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+
+template<typename T> using ordered_multiset
+        = tree<T, null_type, less_equal<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+struct Segtree{
+    ll n;
+    vector<ll> data;
+    vector<vector<pll>> tree;
+    /// 1, 4
+    Segtree(ll n):n(n), data(n), tree(4*n) {}
+    void seg_init(ll idx, ll s, ll e){
+        if(s==e){
+            tree[idx].push_back({0,data[s]});
+            return;
+        }
+        ll mid=(s+e)>>1;
+        seg_init(idx<<1, s, mid);
+        seg_init(idx<<1|1, mid+1, e);
+        tree[idx].push_back(
+                {0,
+                 tree[idx<<1].back().second+tree[idx<<1|1].back().second});
+    }
+
+    void seg_update(ll idx, ll s, ll e, ll pos, ll val, ll ord){
+        if(pos<s || pos>e)return; // 완벽히 노드 범위를 벗어남
+        if(s==e){
+            tree[idx].push_back({ord,val});
+            return;
+        }
+        ll mid=(s+e)>>1;
+        seg_update(idx<<1, s, mid, pos, val,ord);
+        seg_update(idx<<1|1, mid+1, e, pos, val,ord);
+        tree[idx].push_back({ord,
+                             tree[idx<<1].back().second+tree[idx<<1|1].back().second});
+    }
+
+    ll seg_query(ll idx, ll s, ll e, ll l, ll r, ll ord){
+        if(l>e || r<s)return 0; // 완벽히 노드 범위를 벗어남
+        if(l<=s && e<=r){
+            return prev(ranges::lower_bound(tree[idx],pll(ord,LLONG_MAX)))->second;
+        }
+        ll mid=(s+e)>>1;
+        return seg_query(idx<<1, s, mid, l, r, ord) +
+               +seg_query(idx<<1|1, mid+1, e, l, r, ord);
+    }
+
+    void init(const vector<ll>&arr){
+        data=arr;
+        seg_init(1, 0, n-1);
+    }
+
+    void update(ll pos, ll val, ll ord){
+        seg_update(1, 0, n-1, pos, val,ord);
+    }
+
+    ll query(ll l, ll r, ll ord){
+        if(l>r)return 0;
+        else return seg_query(1, 0, n-1, l, r, ord);
+    }
+};
+void solve(ll testcase){
+    ll i,j;
+    ll n,q,cnt=0;
+    cin >> n;
+    vector<ll>arr(n);
+    for(auto&x:arr)cin>>x;
+    Segtree seg(n);
+    seg.init(arr);
+    cin>>q;
+    for(i=0;i<q;i++){
+        ll type,x,y,z;
+        cin >> type >> x >> y;
+        switch (type) {
+            case 1:
+                /// arr[x]<-y
+                x--;
+                seg.update(x,y,++cnt);
+                break;
+            case 2:
+                cin>>z;
+                /// arr[y]~arr[z] , xth
+                y--, z--;
+                cout << seg.query(y,z,x) << '\n';
+                break;
+        }
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
