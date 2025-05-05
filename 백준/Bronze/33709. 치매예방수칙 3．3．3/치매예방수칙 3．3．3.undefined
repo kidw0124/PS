@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n,a=0;
+    char c;
+    cin>>n;
+    while(cin>>n){
+        a+=n;
+        if(cin>>c);
+    }
+    cout<<a<<'\n';
+}
