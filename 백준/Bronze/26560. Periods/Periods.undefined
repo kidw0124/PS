@@ -1,0 +1,13 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str;
+    int n;
+    cin>>n;
+    cin.ignore();
+    while(n--){
+        getline(cin,str);
+        if(str.back()!='.')str+='.';
+        cout<<str<<'\n';
+    }
+}
