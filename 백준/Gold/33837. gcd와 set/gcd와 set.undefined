@@ -1,0 +1,222 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = int;
+using pll = pair<ll,ll>;
+using tlll = tuple<ll,ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+template<typename T> using ordered_set
+    = tree<T, null_type, less<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+
+template<typename T> using ordered_multiset
+        = tree<T, null_type, less_equal<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+struct OFDC{
+    vector<tlll>query;
+    vector<ll>grp,sz;
+    vector<vector<pll>>tree;
+    map<pll,ll>connected_time;
+    ll n, q;
+    OFDC(ll n, ll q): n(n), q(q), query(q+1),
+                grp(n+1), sz(n+1,1), tree(4*(q+1)) {
+        iota(grp.begin(), grp.end(), 0);
+    }
+
+    void update(ll node, ll s, ll e, ll l, ll r, pll edge){
+        if(r<s||e<l)return;
+        else if(l<=s&&e<=r){
+            tree[node].push_back(edge);
+            return;
+        }
+        else{
+            ll mid=(s+e)>>1;
+            update(node<<1,s,mid,l,r,edge);
+            update(node<<1|1,mid+1,e,l,r,edge);
+        }
+    }
+
+    ll _find(ll x){
+        if(grp[x]==x) return x;
+        return _find(grp[x]);
+    }
+    pll _union(ll x, ll y){
+        x=_find(x);
+        y=_find(y);
+        if(x!=y){
+            if(sz[x]<sz[y])swap(x,y);
+            grp[y]=x;
+            sz[x]+=sz[y];
+            return {x,y};
+        }
+        else return {-1,-1};
+    }
+    void _delete(ll x, ll y){
+        sz[x]-=sz[y];
+        grp[y]=y;
+    }
+
+    void dfs(ll node, ll s, ll e){
+        vector<pll>real_connected;
+        for(auto&[u,v]:tree[node]){
+            auto [x,y]=_union(u,v);
+            if(x!=-1){
+                real_connected.push_back({x,y});
+            }
+        }
+        if(s==e){
+            if(get<0>(query[s])==3){
+                cout<<
+                    (_find(get<1>(query[s]))==
+                     _find(get<2>(query[s])))
+                    <<'\n';
+            }
+        }
+        else{
+            ll mid = (s + e) >> 1;
+            dfs(node << 1, s, mid);
+            dfs(node << 1 | 1, mid + 1, e);
+        }
+        reverse(all(real_connected));
+        for(auto&[x,y]:real_connected){
+            _delete(x,y);
+        }
+    }
+
+    void run(){
+        for(ll i=0;i<q;i++){
+            auto&[type,u,v]=query[i];
+            cin>>type>>u>>v;
+            if(u>v)swap(u,v);
+            if(type==1){
+                connected_time[{u,v}]=i;
+            }
+            else if(type==2){
+                update(1,0,q,connected_time[{u,v}],i,{u,v});
+                connected_time.erase({u,v});
+            }
+        }
+        for(auto&[edge,time]:connected_time){
+            auto&[u,v]=edge;
+            update(1,0,q,time,q,{u,v});
+        }
+        dfs(1,0,q);
+    }
+};
+
+void solve(ll testcase){
+    ll n,k,m;
+    cin>>n;
+    vector<ll>arr(n);
+    ll g=0;
+    for(auto&x:arr)cin>>x,g=gcd(x,g);
+    if(n==1){
+        cout<<arr[0]<<'\n';
+    }
+    else{
+        sort(all(arr));
+        for(auto&x:arr)x/=g;
+        if(arr[0]==arr.back()){
+            cout<<arr[0]*2*g<<'\n';
+        }
+        else{
+            ll ans=arr[n-1]+1;
+            for(ll p=2;p<=arr[n-1];p++){
+                if(arr[n-1]%p==0){
+                    ll a=0,b=0;
+                    for(ll j=0;j<n;j++){
+                        if(arr[j]%p==0)a=gcd(a,arr[j]);
+                        else b=gcd(b,arr[j]);
+                    }
+                    ans=max(ans,a+b);
+                    if(b==0){
+                        ans=max(ans,a+arr[n-1]);
+                    }
+                }
+            }
+            cout<<ans*g<<'\n';
+        }
+    }
+
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
