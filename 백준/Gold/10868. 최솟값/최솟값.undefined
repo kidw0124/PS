@@ -65,99 +65,7 @@ ll modinverse(ll a, ll m)
 {
     return (extended_gcd(a, m).first % m + m) % m;
 }
-
-struct OFDC{
-    vector<tlll>query;
-    vector<ll>grp,sz;
-    vector<vector<pll>>tree;
-    map<pll,ll>connected_time;
-    ll n, q;
-    OFDC(ll n, ll q): n(n), q(q), query(q+1),
-                      grp(n+1), sz(n+1,1), tree(4*(q+1)) {
-        iota(grp.begin(), grp.end(), 0);
-    }
-
-    void update(ll node, ll s, ll e, ll l, ll r, pll edge){
-        if(r<s||e<l)return;
-        else if(l<=s&&e<=r){
-            tree[node].push_back(edge);
-            return;
-        }
-        else{
-            ll mid=(s+e)>>1;
-            update(node<<1,s,mid,l,r,edge);
-            update(node<<1|1,mid+1,e,l,r,edge);
-        }
-    }
-
-    ll _find(ll x){
-        if(grp[x]==x) return x;
-        return _find(grp[x]);
-    }
-    pll _union(ll x, ll y){
-        x=_find(x);
-        y=_find(y);
-        if(x!=y){
-            if(sz[x]<sz[y])swap(x,y);
-            grp[y]=x;
-            sz[x]+=sz[y];
-            return {x,y};
-        }
-        else return {-1,-1};
-    }
-    void _delete(ll x, ll y){
-        sz[x]-=sz[y];
-        grp[y]=y;
-    }
-
-    void dfs(ll node, ll s, ll e){
-        vector<pll>real_connected;
-        for(auto&[u,v]:tree[node]){
-            auto [x,y]=_union(u,v);
-            if(x!=-1){
-                real_connected.push_back({x,y});
-            }
-        }
-        if(s==e){
-            if(get<0>(query[s])==3){
-                cout<<
-                    (_find(get<1>(query[s]))==
-                     _find(get<2>(query[s])))
-                    <<'\n';
-            }
-        }
-        else{
-            ll mid = (s + e) >> 1;
-            dfs(node << 1, s, mid);
-            dfs(node << 1 | 1, mid + 1, e);
-        }
-        reverse(all(real_connected));
-        for(auto&[x,y]:real_connected){
-            _delete(x,y);
-        }
-    }
-
-    void run(){
-        for(ll i=0;i<q;i++){
-            auto&[type,u,v]=query[i];
-            cin>>type>>u>>v;
-            if(u>v)swap(u,v);
-            if(type==1){
-                connected_time[{u,v}]=i;
-            }
-            else if(type==2){
-                update(1,0,q,connected_time[{u,v}],i,{u,v});
-                connected_time.erase({u,v});
-            }
-        }
-        for(auto&[edge,time]:connected_time){
-            auto&[u,v]=edge;
-            update(1,0,q,time,q,{u,v});
-        }
-        dfs(1,0,q);
-    }
-};
-alignas(32) int arr[100'000],p[8];
+int arr[100'000];
 
 void solve(ll testcase){
     int i,j,k;
@@ -169,16 +77,10 @@ void solve(ll testcase){
         cin>>l>>r;
         l--;
         int ret=1e9;
-        __m256i minv = _mm256_set1_epi32(1e9);
-        while(l&7 && l<r)ret=min(ret,arr[l++]);
-        while(r&7 && l<r)ret=min(ret,arr[--r]);
-        while(l+7<r){
-            __m256i av = _mm256_load_si256((const __m256i*)(arr+l));
-            minv=_mm256_min_epi32(minv, av);
-            l+=8;
+        for(j=l;j<r;j++){
+            ret=min(ret,arr[j]);
         }
-        _mm256_store_si256((__m256i*)p, minv);
-        cout<<min(ret, *min_element(p, p+8)) << '\n';
+        cout<<ret<<'\n';
     }
 }
 
