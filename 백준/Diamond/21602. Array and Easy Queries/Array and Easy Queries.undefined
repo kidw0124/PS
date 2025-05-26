@@ -1,0 +1,105 @@
+#include<bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+#define int uint32_t
+#define short uint16_t
+alignas(16) short arr[1'000'000],tmp[8];
+
+void solve(int testcase){
+    int i,j,k;
+    int n,m;
+    cin>>n>>m;
+    for(i=0;i<n;i++) {
+        cin>>arr[i];
+    }
+    for(i=0;i<m;i++) {
+        int type,l,r;
+        short x;
+        cin>>type>>l>>r>>x;
+        l--;
+        if(type==1){
+            while(l&15&&l<r)arr[l++]&=x;
+            while(r&15&&l<r)arr[--r]&=x;
+            __m256i masks=_mm256_set1_epi16(x);
+            while(l<r){
+                __m256i data=_mm256_load_si256((__m256i*)(arr+l));
+                data=_mm256_and_si256(data,masks);
+                _mm256_store_si256((__m256i*)(arr+l),data);
+                l+=16;
+            }
+        }
+        if(type==2){
+            while(l&15&&l<r)arr[l++]|=x;
+            while(r&15&&l<r)arr[--r]|=x;
+            __m256i masks=_mm256_set1_epi16(x);
+            while(l<r){
+                __m256i data=_mm256_load_si256((__m256i*)(arr+l));
+                data=_mm256_or_si256(data,masks);
+                _mm256_store_si256((__m256i*)(arr+l),data);
+                l+=16;
+            }
+        }
+        if(type==3){
+            while(l&15&&l<r)arr[l++]^=x;
+            while(r&15&&l<r)arr[--r]^=x;
+            __m256i masks=_mm256_set1_epi16(x);
+            while(l<r){
+                __m256i data=_mm256_load_si256((__m256i*)(arr+l));
+                data=_mm256_xor_si256(data,masks);
+                _mm256_store_si256((__m256i*)(arr+l),data);
+                l+=16;
+            }
+        }
+        if(type==4){
+            int ans=0;
+            while(l&15&&l<r)ans+=arr[l++]==x;
+            while(r&15&&l<r)ans+=arr[--r]==x;
+            __m256i masks=_mm256_set1_epi16(x);
+            while(l<r){
+                __m256i data=_mm256_load_si256((__m256i*)(arr+l));
+                __m256i cmp=_mm256_cmpeq_epi16(data,masks);
+                int count=_mm256_movemask_epi8(cmp);
+                ans+=__builtin_popcount(count)>>1;
+                l+=16;
+            }
+            cout<<ans<<'\n';
+        }
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    int i, j, k;
+
+}
+
+signed main() {
+    setup();
+    preprocess();
+    int t = 1;
+//    cin >> t;
+    for (int testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
