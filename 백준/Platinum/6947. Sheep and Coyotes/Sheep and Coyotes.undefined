@@ -1,0 +1,157 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using tlll = tuple<ll,ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+template<typename T> using ordered_set
+        = tree<T, null_type, less<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+
+template<typename T> using ordered_multiset
+        = tree<T, null_type, less_equal<>, rb_tree_tag,
+        tree_order_statistics_node_update>;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b) { return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+struct chash{
+    size_t operator()(const pll& _x) const{
+        auto [x,y]=_x;
+        size_t hx=hash<ll>()(x);
+        size_t hy=hash<ll>()(y);
+        return ((hx<<22)|(hx>>22))^hy;
+    }
+    size_t operator()(const tuple<ll,string,ll>& _x) const{
+        auto [x,y,z]=_x;
+        size_t hx=hash<ll>()(x);
+        size_t hy=hash<string>()(y);
+        size_t hz=hash<ll>()(z);
+        return ((hx<<22)|(hx>>22))^((hy<<17)|(hy>>17))^hz;
+    }
+};
+
+
+void solve(ll testcase){
+    ll i,j,k;
+    ll n,m,s;
+    cin >> n;
+    vector<pld>arr(n);
+
+    for(auto& [x,y]:arr) {
+        cin>>x>>y;
+    }
+    cout<<setprecision(2)<<fixed;
+    for(i=0;i<n;i++){
+        ld l=0,r=1000;
+        for(j=0;j<n;j++) {
+            if(i==j) continue;
+            pld mid={(arr[i].first + arr[j].first) / 2, (arr[i].second + arr[j].second) / 2};
+            ld mi;
+            if(arr[i].second==arr[j].second) {
+                mi=mid.first;
+            }
+            else {
+                ld slope = -(arr[i].first - arr[j].first) / (arr[i].second - arr[j].second);
+                ld xintercept = mid.second - slope * mid.first;
+                mi=xintercept / -slope;
+            }
+            if(arr[j].first<arr[i].first){
+                l=max(l,mi);
+            }
+            else if(arr[j].first>arr[i].first){
+                r=min(r,mi);
+            }
+            else if(arr[i].second>arr[j].second){
+                l=1000, r=0;
+            }
+        }
+        debug<<"i: "<<i<<" l: "<<l<<" r: "<<r<<"\n";
+        if(l<r+1e-9) {
+            cout<<"The sheep at (";
+            cout<<arr[i].first<<", ";
+            cout<<arr[i].second<<") might be eaten.\n";
+            continue;
+        }
+    }
+
+
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
