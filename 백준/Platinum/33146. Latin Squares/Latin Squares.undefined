@@ -1,0 +1,118 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll, ll>;
+using ld = long double;
+using pld = pair<ld, ld>;
+
+void solve() {
+    ll i,j;
+    ll n,m;
+    cin>>n>>m;
+    vector<vector<pll>>arr(n,vector<pll>(n));
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            arr[i][j]={i,j};
+        }
+    }
+    vector<vector<ll>>row_grp,col_grp;
+    vector<ll>row(n),col(n);
+    vector<ll>rows,cols;
+    iota(row.begin(), row.end(),0);
+    iota(col.begin(), col.end(),0);
+    for(i=0;i<m;i++){
+        char c;
+        ll x,y;
+        cin>>c>>x>>y;
+        x--,y--;
+        if(c=='R'){
+            swap(row[x],row[y]);
+        }
+        else{
+            swap(col[x],col[y]);
+        }
+    }
+    vector<bool>vis(n);
+    for(i=0;i<n;i++){
+        vector<ll>tmp;
+        ll now=i;
+        while(!vis[now]){
+            tmp.push_back(now);
+            vis[now]=1;
+            now=row[now];
+        }
+        if(tmp.size())row_grp.push_back(tmp);
+    }
+    vis.assign(n,0);
+    for(i=0;i<n;i++){
+        vector<ll>tmp;
+        ll now=i;
+        while(!vis[now]){
+            tmp.push_back(now);
+            vis[now]=1;
+            now=col[now];
+        }
+        if(tmp.size())col_grp.push_back(tmp);
+    }
+    ll per=row_grp[0].size();
+    for(auto&v:row_grp){
+        for(auto&k:v)rows.push_back(k);
+        if(per!=v.size()){
+            cout<<"*";
+            return;
+        }
+    }
+    for(auto&v:col_grp){
+        for(auto&k:v)cols.push_back(k);
+        if(per!=v.size()){
+            cout<<"*";
+            return;
+        }
+    }
+//    n=6;
+//    per=3;
+    ll sz=n/per;
+    vector<vector<ll>>por(n,vector<ll>(n));
+    for(i=0;i<n;i++){
+        por[0][i]=i+1;
+    }
+    for(i=1;i<per;i++){
+        por[i]=por[i-1];
+        for(j=0;j<sz;j++){
+            rotate(por[i].begin()+j*per,por[i].begin()+j*per+per-1,por[i].begin()+(j+1)*per);
+        }
+    }
+    for(i=1;i<sz;i++){
+        copy(por.begin(),por.begin()+per,por.begin()+per*i);
+        for(j=0;j<per;j++){
+            rotate(por[per*i+j].begin(),por[per*i+j].begin()+per*i,por[per*i+j].end());
+        }
+    }
+//    for(auto k:por){
+//        for(auto x:k)cout<<x<<' ';
+//        cout<<'\n';
+//    }
+    vector<vector<ll>>ans(n,vector<ll>(n));
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            ans[rows[i]][cols[j]]=por[i][j];
+        }
+    }
+    for(auto&k:ans){
+        for(auto&kk:k)cout<<kk<<' ';
+        cout<<'\n';
+    }
+}
+
+int main(){
+#ifdef kidw0124
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+#endif
+    solve();
+    return 0;
+}
