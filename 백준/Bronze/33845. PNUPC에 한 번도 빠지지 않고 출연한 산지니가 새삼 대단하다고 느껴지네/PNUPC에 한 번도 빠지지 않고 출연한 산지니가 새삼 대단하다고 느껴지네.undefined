@@ -1,0 +1,7 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str,s;
+    cin>>str>>s;
+    for(auto k:s)if(str.find(k)==-1)cout<<k;
+}
