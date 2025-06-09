@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+void solve(){
+    int i,j,k;
+    ll n,g=0;
+    cin>>n;
+    vector<ll>arr(n);
+    for(i=0;i<n;i++){
+        cin>>arr[i];
+        g+=arr[i];
+    }
+    g/=n;
+    auto func=[&g,&n](vector<ll>arr){
+        ll now=0,tmp=0;
+        for(int i=0;i<2*n;i++){
+            ll idx=i%n;
+            now+=tmp;
+            if(arr[idx]>g){
+                tmp+=arr[idx]-g;
+                arr[idx]=g;
+            }
+            else if(arr[idx]<g){
+                ll need=g-arr[idx];
+                if(need<=tmp){
+                    arr[idx]+=need;
+                    tmp-=need;
+                }
+                else{
+                    arr[idx]+=tmp;
+                    tmp=0;
+                }
+            }
+        }
+        return now;
+    };
+    ll ans=func(arr);
+    reverse(arr.begin(), arr.end());
+    ans=min(ans,func(arr));
+    cout<<ans;
+}
+
+int main() {
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+    solve();
+}
