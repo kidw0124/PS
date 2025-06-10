@@ -1,0 +1,121 @@
+#include<bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using pll = pair<ll,ll>;
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+ll mod_inverse(ll a, ll m) {
+    ll m0 = m, t, q;
+    ll x0 = 0, x1 = 1;
+    if (m == 1) return 0;
+    while (a > 1) {
+        q = a / m;
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+}
+
+constexpr ll mod = 1e9 + 7;
+constexpr ll inf = 1e18;
+
+void solve(ll testcase){
+    ll i,j;
+    ll n,m,k;
+    cin>>n>>m>>k;
+    vector mind(n+1,inf);
+    map<ll,ll>maxd;
+    vector grp(n+1,vector<pll>());
+    map<ll,ll> rgrp;
+    auto vcton=[&m](ll v, ll c){
+        return v*m+c;
+    };
+    auto ntovc=[&m](ll n)->pll{
+        if(n%m==0)return {n/m-1,m};
+        return {n/m, n%m};
+    };
+    for(i=0;i<m;i++){
+        ll u,v,t;
+        cin>>u>>v>>t;
+        ll l;
+        cin>>l;
+        for(j=0;j<l;j++){
+            ll c;
+            cin>>c;
+            grp[v].push_back({vcton(u,c),t});
+            rgrp[vcton(u,c)]++;
+        }
+    }
+    priority_queue<pair<ll,pll>>pq;
+    mind[n]=0;
+    pq.push({0,{n,0}});
+    while(!pq.empty()){
+        auto [d,_]=pq.top();
+        auto [v,type]=_;
+        pq.pop();
+        d=-d;
+        if(type){
+            ll mv=ntovc(v).first;
+            if(mind[mv]>d){
+                mind[mv]=d;
+                pq.push({-d,{mv,0}});
+            }
+        }
+        else{
+            if(mind[v]!=d)continue;
+            for(auto [maxv,c]:grp[v]){
+                if(maxd[maxv]<d+c){
+                    maxd[maxv]=d+c;
+                }
+                if(--rgrp[maxv]==0){
+                    pq.push({-maxd[maxv],{maxv,1}});
+                    rgrp.erase(maxv);
+                }
+            }
+        }
+    }
+    if(mind[1]==inf){
+        cout<<"impossible\n";
+    }
+    else cout<<mind[1]<<"\n";
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+}
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
