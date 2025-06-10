@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#include <immintrin.h>
+#include<immintrin.h>
 #pragma comment(linker, "/STACK:336777216")
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx,avx2,fma")
@@ -12,7 +12,10 @@ constexpr bool ddebug = false;
 using ll = long long;
 using pll = pair<ll,ll>;
 #define debug if constexpr(ddebug) cout << "[DEBUG] "
-
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
 ll mod_inverse(ll a, ll m) {
     ll m0 = m, t, q;
     ll x0 = 0, x1 = 1;
@@ -37,9 +40,9 @@ void solve(ll testcase){
     ll n,m,k;
     cin>>n>>m>>k;
     vector mind(n+1,inf);
-    map<ll,ll>maxd;
+    gp_hash_table<ll,ll>maxd;
     vector grp(n+1,vector<pll>());
-    map<ll,ll> rgrp;
+    gp_hash_table<ll,ll> rgrp;
     auto vcton=[&m](ll v, ll c){
         return v*m+c;
     };
