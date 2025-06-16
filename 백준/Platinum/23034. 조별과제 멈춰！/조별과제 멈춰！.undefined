@@ -1,0 +1,140 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+void yes() {
+    cout << "Yes\n";
+}
+
+void no() {
+    cout << "No\n";
+}
+
+constexpr ll INF=1e18;
+
+void solve(ll testcase){
+    ll i, j, k;
+    ll n,m;
+    cin>>n>>m;
+    vector<pair<ll,pll>>edges(m);
+    vector<vector<pll>>grp(n+1);
+    for(auto&[w,p]:edges){
+        auto&[u,v]=p;
+        cin>>u>>v>>w;
+        grp[u].push_back({v, w});
+        grp[v].push_back({u, w});
+    }
+    vector<ll>par(n+1,-1);
+    vector<ll>parw(n+1,0);
+    par[1]=0;
+    ll cost=0;
+    priority_queue<pair<ll,pll>,vector<pair<ll,pll>>,greater<>>pq;
+    for(auto&[v,w]:grp[1]){
+        pq.push({w, {1, v}});
+    }
+    while(!pq.empty()){
+        auto [w, _] = pq.top();
+        pq.pop();
+        auto&[p,v]=_;
+        if(par[v]==-1){
+            par[v]=p;
+            parw[v]=w;
+            cost+=w;
+            for(auto&[u, ww]:grp[v]){
+                if(par[u]==-1){
+                    pq.push({ww, {v, u}});
+                }
+            }
+        }
+    }
+    auto get_lca=[&](ll u, ll v) {
+        vector<ll>path_u, path_v;
+        while(u){
+            path_u.push_back(u);
+            u=par[u];
+        }
+        while(v){
+            path_v.push_back(v);
+            v=par[v];
+        }
+        reverse(all(path_u));
+        reverse(all(path_v));
+        ll lca=-1;
+        for(i=0;i<min(path_u.size(),path_v.size());i++){
+            if(path_u[i]==path_v[i]){
+                lca=path_u[i];
+            }
+            else{
+                break;
+            }
+        }
+        return lca;
+    };
+    ll q;
+    cin>>q;
+    while(q--){
+        ll u, v;
+        cin>>u>>v;
+        ll lca=get_lca(u, v);
+        ll ans=0;
+        while(u!=lca){
+            ans=max(ans,parw[u]);
+            u=par[u];
+        }
+        while(v!=lca){
+            ans=max(ans,parw[v]);
+            v=par[v];
+        }
+        cout<<cost-ans<<"\n";
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
