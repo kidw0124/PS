@@ -1,0 +1,124 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+void yes() {
+    cout << "Yes\n";
+}
+
+void no() {
+    cout << "No\n";
+}
+
+constexpr ll INF=1e18;
+
+void solve(ll testcase){
+    ll i, j, k;
+    ll n;
+    cin>>n;
+    vector<ll>arr(n+1);
+    for(i=1;i<=n;i++){
+        cin>>arr[i],arr[i]%=2520;
+        if(arr[i]<0)arr[i]+=2520;
+    }
+    vector<vector<ll>>grp(n+1);
+    for(i=1;i<=n;i++){
+        ll x;
+        cin>>x;
+        grp[i].resize(x);
+        for(j=0;j<x;j++){
+            cin>>grp[i][j];
+        }
+    }
+    vector<ll>ans((n+1)*2520);
+    vector<ll>vis((n+1)*2520);
+    vector<ll>tmp;
+    set<ll>st;
+    ll tt=-1;
+    ll aa=0;
+    auto get_ans=[&](ll nod, ll dep,auto&&self){
+        ll num=nod/2520,rem=nod%2520;
+        if(ans[nod]){
+            aa=ans[nod];
+            return;
+        }
+        if(vis[nod]){
+            tt=nod;
+            tmp.push_back(nod);
+            st.insert(num);
+            return;
+        }
+        vis[nod]=dep;
+        rem+=arr[num];
+        rem%=2520;
+        ll nxt=grp[num][rem%grp[num].size()];
+        self(nxt*2520+rem, dep+1,self);
+        if(tt==nod)aa=st.size();
+        st.insert(num);
+        tmp.push_back(nod);
+    };
+    ll q;
+    cin>>q;
+    while(q--){
+        ll x,y;
+        cin>>x>>y;
+        y%=2520;
+        if(y<0)y+=2520;
+        get_ans(x*2520+y, 1, get_ans);
+        for(auto&k:tmp)ans[k]=aa;
+        tmp.clear();
+        st.clear();
+        tt=-1;
+        cout<<ans[x*2520+y]<<"\n";
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
