@@ -1,0 +1,136 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+using i64 = long long;
+using i128 = __int128;
+
+i64 modadd(i64 a, i64 b, i64 mod) {
+    return a + b < mod ? a + b : a + b - mod;
+}
+i64 modmul(i64 a, i64 b, i64 mod) {
+    return i128(a) * b % mod;
+}
+i64 modpow(i64 x, i64 n, i64 mod) {
+    i64 res = 1;
+    for (; n; n >>= 1) {
+        if (n & 1) res = modmul(res, x, mod);
+        x = modmul(x, x, mod);
+    }
+    return res;
+}
+
+bool is_prime(i64 n) {
+    if (n < 2 || n % 2 == 0 || n % 3 == 0) return n == 2 || n == 3;
+    i64 k = __builtin_ctzll(n - 1), d = n - 1 >> k;
+    for (i64 a : { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 }) {
+        i64 p = modpow(a % n, d, n), i = k;
+        while (p != 1 && p != n - 1 && a % n && i--) p = modmul(p, p, n);
+        if (p != n - 1 && i != k) return 0;
+    }
+    return 1;
+}
+
+i64 pollard(i64 n) {
+    auto f = [n](i64 x) { return modadd(modmul(x, x, n), 3, n); };
+    i64 x = 0, y = 0, t = 30, p = 2, i = 1, q;
+    while (t++ % 40 || gcd(p, n) == 1) {
+        if (x == y) x = ++i, y = f(x);
+        if (q = modmul(p, abs(x - y), n)) p = q;
+        x = f(x), y = f(f(y));
+    }
+    return gcd(p, n);
+}
+
+vector<i64> factor(i64 n) {
+    vector v(0, 0LL);
+    auto rec = [&](const auto& self, i64 n) -> void {
+        if (n == 1) return;
+        if (is_prime(n)) { v.push_back(n); return; }
+        i64 x = pollard(n);
+        self(self, x);
+        self(self, n / x);
+    };
+    rec(rec, n);
+    sort(v.begin(), v.end());
+    return v;
+}
+void yes() {
+    cout << "Yes\n";
+}
+
+void no() {
+    cout << "No\n";
+}
+
+constexpr ll INF=1e18;
+
+void solve(ll testcase){
+    ll i, j, k;
+    ll n;
+    cin>>n;
+    map<ll,ll>mp;
+    for(i=0;i<n;i++){
+        cin>>j;
+        auto fl=factor(j);
+        sort(fl.begin(), fl.end());
+        fl.erase(unique(fl.begin(), fl.end()), fl.end());
+        for(auto &x:fl){
+            mp[x]++;
+        }
+    }
+    ll ans=0;
+    for(auto&[p,c]:mp){
+        ans=max(ans, c);
+    }
+    cout<<ans<<"\n";
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
