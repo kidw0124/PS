@@ -1,0 +1,8 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n;
+    cin>>n;
+    n--;
+    cout<<(char)('a'+n%8)<<n/8+1;
+}
