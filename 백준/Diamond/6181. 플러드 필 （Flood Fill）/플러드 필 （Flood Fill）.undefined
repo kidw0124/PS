@@ -1,0 +1,216 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+void yes() {
+    cout << "Yes\n";
+}
+
+void no() {
+    cout << "No\n";
+}
+
+constexpr ll INF=1e18;
+
+struct SegMax {
+    vector<pll>tree;
+    SegMax(ll n) {
+        tree.resize(n<<2);
+    }
+    pll seg_query(ll node, ll s, ll e, ll l, ll r){
+        if(s>r||e<l)return {-INF,-1};
+        if(s>=l&&e<=r)return tree[node];
+        ll mid=s+e>>1;
+        return max(seg_query(node<<1, s, mid, l, r),
+                   seg_query(node<<1|1, mid+1, e, l, r));
+    }
+    void seg_update(ll node, ll s, ll e, ll idx, pll val){
+        if(s==e){
+            tree[node]=val;
+            return;
+        }
+        ll mid=s+e>>1;
+        if(idx<=mid)seg_update(node<<1, s, mid, idx, val);
+        else seg_update(node<<1|1, mid+1, e, idx, val);
+        tree[node]=max(tree[node<<1], tree[node<<1|1]);
+    }
+};
+
+void solve(ll testcase){
+    ll i, j, k;
+    ll n,d;
+    cin>>n>>d;
+    vector<tuple<ll,ll,ll>>arr(n);
+    vector<pll>points(n);
+    vector<vector<ll>>grp(n);
+    map<pll,vector<ll>>mp;
+    map<pll,pair<pll,pll>>mp2;
+    for(i=0;i<n;i++){
+        auto &[x,y,idx]=arr[i];
+        cin>>x>>y;
+    }
+    sort(arr.begin(), arr.end());
+    for(i=0;i<n;i++){
+        auto &[x,y,idx]=arr[i];
+        points[i]={x+y,x-y};
+        x=points[i].first,y=points[i].second;
+        idx=i;
+        auto flr=[](ll a,ll d){
+            ll q=a/d, r=a%d;
+            if(r<0)q--;
+            return q;
+        };
+        mp[{flr(x,d),flr(y,d)}].push_back(i);
+    }
+    debug<<mp.size()<<" "<<mp2.size()<<"\n";
+    for(auto&[p,vidx]:mp){
+        sort(vidx.begin(), vidx.end(), [&](ll a, ll b) {
+            return points[a] < points[b];
+        });
+        for(i=1;i<vidx.size();i++){
+            grp[vidx[i]].push_back(vidx[i-1]);
+            grp[vidx[i-1]].push_back(vidx[i]);
+        }
+        auto &[mini,maxi]=mp2[p];
+        auto&[mx,my]=mini;
+        auto&[Mx,My]=maxi;
+        mx=INF, my=INF, Mx=-INF, My=-INF;
+        for(auto&idx:vidx) {
+            auto [x,y]=points[idx];
+            mx=min(mx,x),Mx=max(Mx,x),my=min(my,y),My=max(My,y);
+        }
+    }
+    debug<<mp.size()<<" "<<mp2.size()<<"\n";
+//    for(auto&[p,_]:mp){
+//        auto&[mini,maxi]=mp2[p];
+//        cout<<p.first<<" "<<p.second<<" "<<_.size()<<" "<<mini.first<<" "<<mini.second<<" "<<maxi.first<<" "<<maxi.second<<"\n";
+//    }
+    for(auto&[p,vidx]:mp){
+        if(mp.count({p.first-1,p.second})){
+            const auto&lef=mp[{p.first-1,p.second}];
+            const auto&rig=mp[p];
+            const ll lefrig=mp2[{p.first-1,p.second}].second.first;
+            const ll riglef=mp2[p].first.first;
+            if(lefrig+d>=riglef){
+                grp[lef[0]].push_back(rig[0]);
+                grp[rig[0]].push_back(lef[0]);
+            }
+        }
+        if(mp.count({p.first,p.second-1})){
+            const auto&down=mp[{p.first,p.second-1}];
+            const auto&up=mp[p];
+            const ll updown=mp2[p].first.second;
+            const ll downup=mp2[{p.first,p.second-1}].second.second;
+            if(downup+d>=updown){
+                grp[down[0]].push_back(up[0]);
+                grp[up[0]].push_back(down[0]);
+            }
+        }
+        if(mp.count({p.first-1,p.second-1})){
+            const auto&lefdown=mp[{p.first-1,p.second-1}];
+            const auto&uprig=mp[p];
+            ll ymin=INF;
+            ll idx=0;
+            for(const auto&k:lefdown) {
+                auto [x,y]=points[k];
+                while(idx<uprig.size()&&points[uprig[idx]].first<=x+d) {
+                    ymin=min(ymin,points[uprig[idx]].second);
+                    idx++;
+                }
+                if(ymin<=y+d && ymin!=INF) {
+                    grp[k].push_back(uprig[0]);
+                    grp[uprig[0]].push_back(k);
+                    break;
+                }
+            }
+        }
+        if(mp.count({p.first-1,p.second+1})){
+            const auto&lefup=mp[{p.first-1,p.second+1}];
+            const auto&rigdown=mp[p];
+            ll ymax=-INF;
+            ll idx=0;
+            for(const auto&k:lefup) {
+                auto [x,y]=points[k];
+                while(idx<rigdown.size()&&points[rigdown[idx]].first<=x+d) {
+                    ymax=max(ymax,points[rigdown[idx]].second);
+                    idx++;
+                }
+                if(ymax+d>=y && ymax!=-INF) {
+                    grp[k].push_back(rigdown[0]);
+                    grp[rigdown[0]].push_back(k);
+                    break;
+                }
+            }
+        }
+    }
+    debug<<mp.size()<<" "<<mp2.size()<<"\n";
+    ll cnt=0,ans=0;
+    vector<bool>vis(n);
+    auto dfs=[&](auto&& self, ll idx)->ll{
+        ll ret=1;
+        for(auto&k:grp[idx]) {
+            if(!vis[k]) {
+                vis[k]=true;
+                ret+=self(self, k);
+            }
+        }
+        return ret;
+    };
+    for(i=0;i<n;i++) {
+        if(vis[i]) continue;
+        vis[i]=true;
+        ans=max(ans,dfs(dfs, i));
+        cnt++;
+    }
+    cout<<cnt<<" "<<ans<<"\n";
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
