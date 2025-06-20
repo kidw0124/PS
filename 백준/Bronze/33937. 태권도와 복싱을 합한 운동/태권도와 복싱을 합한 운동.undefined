@@ -1,0 +1,22 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str1,str2;
+    cin>>str1>>str2;
+    auto fail=[](){
+        cout<<"no such exercise";
+        exit(0);
+    };
+    auto find_str=[&fail](string&str){
+        auto it1=ranges::find_if(str,[](auto c){
+            return c=='a'||c=='e'||c=='i'||c=='o'||c=='u';
+        });
+        if(it1==str.end())fail();
+        it1=find_if(it1,str.end(),[](auto c){
+            return !(c=='a'||c=='e'||c=='i'||c=='o'||c=='u');
+        });
+        if(it1==str.end())fail();
+        return str.substr(0,it1-str.begin());
+    };
+    cout<<find_str(str1)+find_str(str2);
+}
