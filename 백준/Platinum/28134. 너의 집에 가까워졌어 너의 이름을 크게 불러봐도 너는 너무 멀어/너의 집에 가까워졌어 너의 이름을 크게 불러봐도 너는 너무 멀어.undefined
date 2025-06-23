@@ -1,0 +1,516 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll,ll>;
+using tlll = tuple<ll,ll,ll>;
+using ld = long double;
+using pld = pair<ld,ld>;
+typedef unsigned long long ull;
+typedef __float128 LD;
+typedef __int128_t LL;
+typedef __uint128_t ULL;
+typedef pair<ll, ll> pii;
+typedef vector<ll> vi;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+using namespace __gnu_pbds;
+#pragma warning(disable : 4996)
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#define pb(x) push_back(x)
+#define all(x) (x).begin(), (x).end()
+#define rep(i, a, b) for (auto i = (a); i < (b); i++)
+#define each(x, a) for (auto &x : a)
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+ll gcd(ll a, ll b){
+    return b?gcd(b,a%b):a;
+}
+ll lcm(ll a, ll b)
+{
+    if (a && b)
+        return a * (b / gcd(a, b));
+    return a + b;
+}
+ll powm(ll a, ll b, ll rem)
+{
+    ll p = 1;
+    for (; b; b /= 2, a = (a * a) % rem)
+        if (b & 1)
+            p = (p * a) % rem;
+    return p;
+}
+pair<ll, ll> extended_gcd(ll a, ll b)
+{
+    if (b == 0)
+        return {1, 0};
+    auto t = extended_gcd(b, a % b);
+    return {t.second, t.first - t.second * (a / b)};
+}
+ll modinverse(ll a, ll m)
+{
+    return (extended_gcd(a, m).first % m + m) % m;
+}
+
+LD eps = 1e-12;
+ll large_mod_mul(ll a, ll b, ll m)
+{
+    return ll((__int128)a * (__int128)b % m);
+}
+ll modpow(ll n, ll k, ll m)
+{
+    ll ret = 1;
+    n %= m;
+    while (k)
+    {
+        if (k & 1)
+            ret = large_mod_mul(ret, n, m);
+        n = large_mod_mul(n, n, m);
+        k /= 2;
+    }
+    return ret;
+}
+bool test_witness(ull a, ull n, ull s)
+{
+    if (a >= n)
+        a %= n;
+    if (a <= 1)
+        return true;
+    ull d = n >> s;
+    ull x = modpow(a, d, n);
+    if (x == 1 || x == n - 1)
+        return true;
+    while (s-- > 1)
+    {
+        x = large_mod_mul(x, x, n);
+        if (x == 1)
+            return false;
+        if (x == n - 1)
+            return true;
+    }
+    return false;
+}
+bool is_prime(ull n)
+{
+    if (n == 2)
+        return true;
+    if (n < 2 || n % 2 == 0)
+        return false;
+    ull d = n >> 1, s = 1;
+    for (; (d & 1) == 0; s++)
+        d >>= 1;
+#define T(a) test_witness(a##ull, n, s)
+    if (n < 4759123141ull)
+        return T(2) && T(7) && T(61);
+    return T(2) && T(325) && T(9375) && T(28178) && T(450775) && T(9780504) && T(1795265022);
+#undef T
+}
+ll pollard_rho(ll n)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<ll> dis(1, n - 1);
+    ll x = dis(gen);
+    ll y = x;
+    ll c = dis(gen);
+    ll g = 1;
+    while (g == 1)
+    {
+        x = (large_mod_mul(x, x, n) + c) % n;
+        y = (large_mod_mul(y, y, n) + c) % n;
+        y = (large_mod_mul(y, y, n) + c) % n;
+        g = gcd(abs(x - y), n);
+    }
+    return g;
+}
+void factorize(ll n, map<ll, ll> &fl)
+{
+    if (n == 1)
+    {
+        return;
+    }
+    if (n % 2 == 0)
+    {
+        fl[2]++;
+        factorize(n / 2, fl);
+    }
+    else if (is_prime(n))
+    {
+        fl[n]++;
+    }
+    else
+    {
+        ll f = pollard_rho(n);
+        factorize(f, fl);
+        factorize(n / f, fl);
+    }
+}
+
+const ll mod = 998244353;
+
+//#ifdef ATCODER
+//#include <atcoder/all>
+//using namespace atcoder;
+//#endif
+
+template <ll mod=mod>
+struct mint{
+    ll x;
+    mint(ll x=0):x((x%mod+mod)%mod){}
+    mint operator-() const { return mint(-x);}
+    mint& operator+=(const mint a) {
+        if((x += a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator-=(const mint a) {
+        if((x += mod-a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator*=(const mint a) {
+        (x *= a.x) %= mod;
+        return *this;
+    }
+    mint& operator/=(const mint a) {
+        return (*this) *= a.inv();
+    }
+    mint operator+(const mint a) const {
+        mint res(*this);
+        return res+=a;
+    }
+    mint operator-(const mint a) const {
+        mint res(*this);
+        return res-=a;
+    }
+    mint operator*(const mint a) const {
+        mint res(*this);
+        return res*=a;
+    }
+    mint operator/(const mint a) const {
+        mint res(*this);
+        return res/=a;
+    }
+    mint inv() const {
+        return modinverse(x, mod);
+    }
+    friend ostream& operator<<(ostream& os, const mint& a) {
+        return os << a.x;
+    }
+    friend istream& operator>>(istream& is, mint& a) {
+        ll t;
+        is >> t;
+        a = mint<mod>(t);
+        return is;
+    }
+    explicit operator ll() const { return x; }
+//    explicit operator int() const { return x; }
+    explicit operator bool() const { return x; }
+    explicit operator double() const { return x; }
+    explicit operator LD() const { return x; }
+    explicit operator LL() const { return x; }
+    explicit operator ULL() const { return x; }
+    explicit operator string() const { return to_string(x); }
+};
+
+void yes() {
+    cout << "Yes\n";
+}
+
+void no() {
+    cout << "No\n";
+}
+
+struct MinCostFlow {
+    typedef int cap_t;
+    typedef int cost_t;
+    bool iszerocap(cap_t cap) { return cap == 0; }
+    struct edge {
+        int target;
+        cost_t cost;
+        cap_t residual_capacity;
+        cap_t orig_capacity;
+        size_t revid;
+    };
+    int n;
+    vector<vector<edge>> graph;
+    MinCostFlow(int n) : graph(n), n(n) {}
+    void addEdge(int s, int e, cost_t cost, cap_t cap) {
+        if (s == e) return;
+        edge forward{ e, cost, cap, cap, graph[e].size() };
+        edge backward{ s, -cost, 0, 0, graph[s].size() };
+        graph[s].emplace_back(forward);
+        graph[e].emplace_back(backward);
+    }
+    pair<cost_t, cap_t> augmentShortest(int s, int e, cap_t flow_limit) {
+        auto infinite_cost = numeric_limits<cost_t>::max();
+        auto infinite_flow = numeric_limits<cap_t>::max();
+        vector<pair<cost_t, cap_t>> dist(n, make_pair(infinite_cost, 0));
+        vector<int> from(n, -1), v(n);
+        dist[s] = pair<cost_t, cap_t>(0, infinite_flow);
+        queue<int> q;
+        v[s] = 1; q.push(s);
+        while(!q.empty()) {
+            int cur = q.front();
+            v[cur] = 0; q.pop();
+            for (const auto& e : graph[cur]) {
+                if (iszerocap(e.residual_capacity)) continue;
+                auto next = e.target;
+                auto ncost = dist[cur].first + e.cost;
+                auto nflow = min(dist[cur].second, e.residual_capacity);
+                if (dist[next].first > ncost) {
+                    dist[next] = make_pair(ncost, nflow);
+                    from[next] = e.revid;
+                    if (v[next]) continue;
+                    v[next] = 1; q.push(next);
+                }
+            }
+        }
+        auto p = e;
+        auto pathcost = dist[p].first;
+        auto flow = dist[p].second;
+        if (iszerocap(flow)|| (flow_limit <= 0 && pathcost >= 0)) return pair<cost_t, cap_t>(0, 0);
+        if (flow_limit > 0) flow = min(flow, flow_limit);
+        while (from[p] != -1) {
+            auto nedge = from[p];
+            auto np = graph[p][nedge].target;
+            auto fedge = graph[p][nedge].revid;
+            graph[p][nedge].residual_capacity += flow;
+            graph[np][fedge].residual_capacity -= flow;
+            p = np;
+        }
+        return make_pair(pathcost * flow, flow);
+    }
+    pair<cost_t,cap_t> solve(int s, int e, cap_t flow_minimum = numeric_limits<cap_t>::max()) {
+        cost_t total_cost = 0;
+        cap_t total_flow = 0;
+        for(;;) {
+            auto res = augmentShortest(s, e, flow_minimum - total_flow);
+            if (res.second <= 0) break;
+            total_cost += res.first;
+            total_flow += res.second;
+        }
+        return make_pair(total_cost, total_flow);
+    }
+};
+
+// usage:
+// MaxFlowDinic::init(n);
+// MaxFlowDinic::add_edge(0, 1, 100, 100); // for bidirectional edge
+// MaxFlowDinic::add_edge(1, 2, 100); // directional edge
+// result = MaxFlowDinic::solve(0, 2); // source -> sink
+// graph[i][edgeIndex].res -> residual
+//
+// in order to find out the minimum cut, use `l'.
+// if l[i] == 0, i is unrechable.
+//
+// O(V*V*E)
+// with unit capacities, O(min(V^(2/3), E^(1/2)) * E)
+struct MaxFlowDinic {
+    typedef int flow_t;
+    struct Edge {
+        int next;
+        size_t inv; /* inverse edge index */
+        flow_t res; /* residual */
+    };
+    int n;
+    vector<vector<Edge>> graph;
+    vector<int> q, l, start;
+
+    void init(int _n) {
+        n = _n;
+        graph.resize(n);
+        for (int i = 0; i < n; i++) graph[i].clear();
+    }
+    void add_edge(int s, int e, flow_t cap, flow_t caprev = 0) {
+        Edge forward{ e, graph[e].size(), cap };
+        Edge reverse{ s, graph[s].size(), caprev };
+        graph[s].push_back(forward);
+        graph[e].push_back(reverse);
+    }
+    bool assign_level(int source, int sink) {
+        int t = 0;
+        memset(&l[0], 0, sizeof(l[0]) * l.size());
+        l[source] = 1;
+        q[t++] = source;
+        for (int h = 0; h < t && !l[sink]; h++) {
+            int cur = q[h];
+            for (const auto& e : graph[cur]) {
+                if (l[e.next] || e.res == 0) continue;
+                l[e.next] = l[cur] + 1;
+                q[t++] = e.next;
+            }
+        }
+        return l[sink] != 0;
+    }
+    flow_t block_flow(int cur, int sink, flow_t current) {
+        if (cur == sink) return current;
+        for (int& i = start[cur]; i < graph[cur].size(); i++) {
+            auto& e = graph[cur][i];
+            if (e.res == 0 || l[e.next] != l[cur] + 1) continue;
+            if (flow_t res = block_flow(e.next, sink, min(e.res, current))) {
+                e.res -= res;
+                graph[e.next][e.inv].res += res;
+                return res;
+            }
+        }
+        return 0;
+    }
+    flow_t solve(int source, int sink) {
+        q.resize(n);
+        l.resize(n);
+        start.resize(n);
+        flow_t ans = 0;
+        while (assign_level(source, sink)) {
+            memset(&start[0], 0, sizeof(start[0]) * n);
+            while (flow_t flow = block_flow(source, sink, numeric_limits<flow_t>::max()))
+                ans += flow;
+        }
+        return ans;
+    }
+};
+
+struct MaxFlowEdgeDemands
+{
+    MaxFlowDinic mf;
+    using flow_t = MaxFlowDinic::flow_t;
+
+    vector<flow_t> ind, outd;
+    flow_t D; int n;
+
+    void init(int _n) {
+        n = _n; D = 0; mf.init(n + 2);
+        ind.clear(); outd.clear();
+        ind.resize(n, 0); outd.resize(n, 0);
+    }
+
+    void add_edge(int s, int e, flow_t cap, flow_t demands = 0) {
+        mf.add_edge(s, e, cap - demands);
+        D += demands; ind[e] += demands; outd[s] += demands;
+    }
+
+    // returns { false, 0 } if infeasible
+    // { true, maxflow } if feasible
+    pair<bool, flow_t> solve(int source, int sink) {
+        mf.add_edge(sink, source, numeric_limits<flow_t>::max());
+
+        for (int i = 0; i < n; i++) {
+            if (ind[i]) mf.add_edge(n, i, ind[i]);
+            if (outd[i]) mf.add_edge(i, n + 1, outd[i]);
+        }
+
+        if (mf.solve(n, n + 1) != D) return{ false, 0 };
+
+        for (int i = 0; i < n; i++) {
+            if (ind[i]) mf.graph[i].pop_back();
+            if (outd[i]) mf.graph[i].pop_back();
+        }
+
+        return{ true, mf.solve(source, sink) };
+    }
+};
+
+void solve(ll testcase){
+    ll i, j, k;
+    ll n, m;
+    cin>>n;
+    vector<vector<ll>>grp(n+1);
+    for(i=0;i<n;i++){
+        ll u,v;
+        cin>>u>>v;
+        grp[u].push_back(v);
+        grp[v].push_back(u);
+    }
+    vector<ll>vis(n+1),par(n+1),sz(n+1);
+    vector<ll>cyc;
+    auto find_cycle=[&](ll ed, ll u){
+        while(u!=ed){
+            cyc.push_back(u);
+            u=par[u];
+        }
+        cyc.push_back(ed);
+    };
+    auto dfs=[&](auto&&dfs, ll u)->void{
+        vis[u]=1;
+        for(auto v:grp[u]){
+            if(v==par[u]) continue;
+            if(vis[v]) {
+                if(cyc.empty()){
+                    find_cycle(v, u);
+                }
+                continue;
+            }
+            par[v]=u;
+            dfs(dfs, v);
+        }
+    };
+    dfs(dfs, 1);
+    fill(vis.begin(), vis.end(), 0);
+    fill(par.begin(), par.end(), 0);
+    for(auto k:cyc)vis[k]=1;
+    ll ans=0;
+    auto dfs2=[&](auto&&dfs2, ll u)->ll{
+        vis[u]=1;
+        sz[u]=1;
+        for(auto v:grp[u]){
+            if(vis[v]) continue;
+            par[v]=u;
+            sz[u]+=dfs2(dfs2, v);
+        }
+        if(par[u]){
+            ans+=sz[u]*(n-sz[u]);
+        }
+        return sz[u];
+    };
+    for(auto k:cyc){
+        dfs2(dfs2, k);
+    }
+    ll cycsz=cyc.size();
+    vector<ll>sum(cycsz<<1|1),ssum(cycsz<<1|1),sqssum(cycsz<<1|1);
+    for(i=0;i<(cycsz<<1);i++){
+        sum[i+1]=sum[i]+sz[cyc[i%cycsz]];
+        ssum[i+1]=ssum[i]+sum[i+1];
+        sqssum[i+1]=sqssum[i]+sum[i+1]*sum[i+1];
+    }
+    ll cand=1e18;
+    for(i=0;i<cycsz;i++){
+        cand=min(cand,
+                 (sum[i]+sum[i+cycsz])*(ssum[i+cycsz-1]-ssum[i])
+                 +sqssum[i]-sqssum[i+cycsz-1]-(cycsz-1)*sum[i]*sum[i+cycsz]);
+    }
+    cout<<ans+cand<<"\n";
+
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+}
+
+int main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
