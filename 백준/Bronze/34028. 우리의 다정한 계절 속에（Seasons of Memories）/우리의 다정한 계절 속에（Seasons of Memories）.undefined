@@ -1,0 +1,8 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int a,b;
+    cin>>a>>b;
+    b%=12;
+    cout<<(a+(b==0)-2015)*4+b/3+1;
+}
