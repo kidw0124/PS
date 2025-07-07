@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    long long n,ans=0,a,b;
+    cin>>n;
+    vector arr(6,0ll);
+    for(auto&k:arr)cin>>k;
+    cin>>a>>b;
+    for(auto&k:arr)ans+=k/a+(k%a>0);
+    cout<<ans<<'\n';
+    cout<<n/b<<' '<<n%b;
+}
