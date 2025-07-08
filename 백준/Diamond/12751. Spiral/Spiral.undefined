@@ -93,9 +93,9 @@ void solve(ll testcase) {
     ll i, j;
     ll n,q;
     cin>>n>>q;
-    auto betsum=[](ll st,ll en,ll offset){
+    auto betsum=[](ll st,ll en,mint<> offset){
         if(st>en)return mint<>(0);
-        return mint(en*(en+1)/2-st*(st-1)/2+offset*(en-st+1));
+        return mint(en*(en+1)/2-st*(st-1)/2)+offset*(en-st+1);
     };
     auto steptorect=[&betsum](ll lev,ll x1,ll y1,ll x2,ll y2)->mint<>{
 //        cout<<"steptorect "<<lev<<" "<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<"\n";
@@ -156,13 +156,14 @@ void solve(ll testcase) {
                 }
                 term[3][0]=term[2][1]-term[2][0];
                 a=term[3][0]/6;
-                b=term[2][0]/2;
-                c=term[1][0];
+                b=(term[2][0]-term[3][0])/2;
+                c=term[1][0]-a-b;
                 d=term[0][0];
-                ans+=a*(k*k*(k-1)*(k-1)/4-bef*bef*(bef-1)*(bef-1)/4)
-                    +b*(k*(k-1)*(k*2-1)/6-bef*(bef-1)*(bef*2-1)/6)
-                    +c*(k*(k-1)/2-bef*(bef-1)/2)
-                    +d*(k-bef);
+                ll dif=k-bef;
+                ans+=a*dif*dif*(dif-1)*(dif-1)/4
+                    +b*dif*(dif-1)*(2*dif-1)/6
+                    +c*dif*(dif-1)/2
+                    +d*dif;
                 bef=k;
             }
 //            cout<<"ans: "<<ans<<"\n";
