@@ -1,0 +1,198 @@
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+constexpr ll mod=1e9+7;
+ll modinverse(ll a, ll m) {
+    ll m0 = m, t, q;
+    ll x0 = 0, x1 = 1;
+    if (m == 1) return 0;
+    while (a > 1) {
+        q = a / m;
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+}
+template <ll mod=mod>
+struct mint{
+    ll x;
+    mint(ll x=0):x((x%mod+mod)%mod){}
+    mint operator-() const { return mint(-x);}
+    mint& operator+=(const mint a) {
+        if((x += a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator-=(const mint a) {
+        if((x += mod-a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator*=(const mint a) {
+        (x *= a.x) %= mod;
+        return *this;
+    }
+    mint& operator/=(const mint a) {
+        return (*this) *= a.inv();
+    }
+    mint operator+(const mint a) const {
+        mint res(*this);
+        return res+=a;
+    }
+    mint operator-(const mint a) const {
+        mint res(*this);
+        return res-=a;
+    }
+    mint operator*(const mint a) const {
+        mint res(*this);
+        return res*=a;
+    }
+    mint operator/(const mint a) const {
+        mint res(*this);
+        return res/=a;
+    }
+    mint inv() const {
+        return modinverse(x, mod);
+    }
+    friend ostream& operator<<(ostream& os, const mint& a) {
+        return os << a.x;
+    }
+    friend istream& operator>>(istream& is, mint& a) {
+        ll t;
+        is >> t;
+        a = mint<mod>(t);
+        return is;
+    }
+    explicit operator ll() const { return x; }
+    explicit operator int() const { return x; }
+    explicit operator bool() const { return x; }
+    explicit operator double() const { return x; }
+    explicit operator string() const { return to_string(x); }
+};
+
+void solve(ll testcase) {
+    ll i, j;
+    ll n,q;
+    cin>>n>>q;
+    auto betsum=[](ll st,ll en,ll offset){
+        if(st>en)return mint<>(0);
+        return mint(en*(en+1)/2-st*(st-1)/2+offset*(en-st+1));
+    };
+    auto steptorect=[&betsum](ll lev,ll x1,ll y1,ll x2,ll y2)->mint<>{
+//        cout<<"steptorect "<<lev<<" "<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<"\n";
+        if(lev==0){
+            return x1*x2<=0&&y1*y2<=0;
+        }
+        mint ans=0;
+        ll last=(lev<<1|1)*(lev<<1|1)-lev;
+        if(y1<=-lev&&-lev<=y2)ans+=betsum(max(-lev,x1),min(lev,x2),last);
+        last-=2*lev;
+        if(x1<=-lev&&-lev<=x2)ans+=betsum(max(-lev+1,-y2),min(lev-1,-y1),last);
+        last-=2*lev;
+        if(y1<=lev&&lev<=y2)ans+=betsum(max(-lev,-x2),min(lev,-x1),last);
+        last-=2*lev;
+        if(x1<=lev&&lev<=x2)ans+= betsum(max(-lev+1,y1),min(lev-1,y2),last);
+        return ans;
+    };
+    for(i=0;i<q;i++){
+        ll x1,y1,x2,y2;
+        cin>>x1>>y1>>x2>>y2;
+        set<ll>st;
+        auto getin=[&st](ll x){
+            st.insert(x-1);
+            st.insert(x);
+            st.insert(x+1);
+        };
+        getin(abs(x1));
+        getin(abs(x2));
+        getin(abs(y1));
+        getin(abs(y2));
+        getin(1);
+        ll bef=*st.begin();
+        mint ans=0;
+        for(auto k:st){
+//            cout<<"k, bef: "<<k<<" "<<bef<<"\n";
+            if(k==bef)continue;
+            else if(bef<0){
+                bef=k;
+                continue;
+            }
+            else if(k-bef<4){
+                while(bef<k){
+                    ans+=steptorect(bef,x1,y1,x2,y2);
+                    bef++;
+                }
+            }
+            else{
+                mint a,b,c,d;
+                vector<vector<mint<>>> term(4,vector<mint<>>(4));
+                for(j=0;j<4;j++){
+                    term[0][j]=steptorect(bef+j,x1,y1,x2,y2);
+                }
+                for(j=0;j<3;j++){
+                    term[1][j]=term[0][j+1]-term[0][j];
+                }
+                for(j=0;j<2;j++){
+                    term[2][j]=term[1][j+1]-term[1][j];
+                }
+                term[3][0]=term[2][1]-term[2][0];
+                a=term[3][0]/6;
+                b=term[2][0]/2;
+                c=term[1][0];
+                d=term[0][0];
+                ans+=a*(k*k*(k-1)*(k-1)/4-bef*bef*(bef-1)*(bef-1)/4)
+                    +b*(k*(k-1)*(k*2-1)/6-bef*(bef-1)*(bef*2-1)/6)
+                    +c*(k*(k-1)/2-bef*(bef-1)/2)
+                    +d*(k-bef);
+                bef=k;
+            }
+//            cout<<"ans: "<<ans<<"\n";
+
+        }
+        cout<<ans<<"\n";
+    }
+}
+
+void setup() {
+  if (ddebug) {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+  } else {
+     ios_base::sync_with_stdio(0);
+     cin.tie(0);
+     cout.tie(0);
+  }
+}
+
+void preprocess() { ll i, j, k; }
+
+signed main() {
+  setup();
+  preprocess();
+  ll t = 1;
+//  cin >> t;
+  for (ll testcase = 1; testcase <= t; testcase++) {
+    solve(testcase);
+    cout << "\n";
+  }
+  return 0;
+}
