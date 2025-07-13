@@ -1,0 +1,31 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str;
+    cin>>str;
+    bool b=0;
+    int i;
+    switch(str.back()){
+        case 'n':case 's':case 'a':
+        case 'e':case 'i':case 'o':case 'u':
+            for(i=str.size()-1;i>=0;i--){
+                if(str[i]=='a'||str[i]=='e'||str[i]=='i'||
+                   str[i]=='o'||str[i]=='u'){
+                    if(b==0)b=1;
+                    else break;
+                }
+            }
+            if(i>=0)cout<<i+1;
+            else cout<<-1;
+            break;
+        default:
+            for(i=str.size()-1;i>=0;i--){
+                if(str[i]=='a'||str[i]=='e'||str[i]=='i'||
+                   str[i]=='o'||str[i]=='u'){
+                    break;
+                }
+            }
+            if(i>=0)cout<<i+1;
+            else cout<<-1;
+    }
+}
