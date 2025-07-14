@@ -1,0 +1,7 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n=1500,m;
+    while(cin>>m)n-=m;
+    cout<<(n>=0?"Yes":"No");
+}
