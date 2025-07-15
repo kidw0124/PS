@@ -1,0 +1,192 @@
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+constexpr ll mod=1e9+7;
+ll modinverse(ll a, ll m) {
+    ll m0 = m, t, q;
+    ll x0 = 0, x1 = 1;
+    if (m == 1) return 0;
+    while (a > 1) {
+        q = a / m;
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+}
+template <ll mod=mod>
+struct mint{
+    ll x;
+    mint(ll x=0):x((x%mod+mod)%mod){}
+    mint operator-() const { return mint(-x);}
+    mint& operator+=(const mint a) {
+        if((x += a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator-=(const mint a) {
+        if((x += mod-a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator*=(const mint a) {
+        (x *= a.x) %= mod;
+        return *this;
+    }
+    mint& operator/=(const mint a) {
+        return (*this) *= a.inv();
+    }
+    mint operator+(const mint a) const {
+        mint res(*this);
+        return res+=a;
+    }
+    mint operator-(const mint a) const {
+        mint res(*this);
+        return res-=a;
+    }
+    mint operator*(const mint a) const {
+        mint res(*this);
+        return res*=a;
+    }
+    mint operator/(const mint a) const {
+        mint res(*this);
+        return res/=a;
+    }
+    mint inv() const {
+        return modinverse(x, mod);
+    }
+    friend ostream& operator<<(ostream& os, const mint& a) {
+        return os << a.x;
+    }
+    friend istream& operator>>(istream& is, mint& a) {
+        ll t;
+        is >> t;
+        a = mint<mod>(t);
+        return is;
+    }
+    explicit operator ll() const { return x; }
+    explicit operator int() const { return x; }
+    explicit operator bool() const { return x; }
+    explicit operator double() const { return x; }
+    explicit operator string() const { return to_string(x); }
+};
+constexpr int INF=1e9;
+void solve(ll testcase) {
+    int i, j;
+    int n,m,q;
+    cin>>n>>m>>q;
+    vector<vector<pair<int,int>>>adj(n+1);
+    vector<vector<int>>ans_map,two_map;
+    for(i=0;i<m;i++){
+        int u,v,w;
+        cin>>u>>v>>w;
+        adj[u].push_back({v,w});
+        adj[v].push_back({u,w});
+    }
+    vector<pair<int,int>>nodes(n);
+    vector<int>rarr(n+1);
+    for(i=1;i<=n;i++)nodes[i-1]={adj[i].size(),i},sort(adj[i].begin(),adj[i].end());
+    int thres=(int)pow(m,1.0/3);
+    sort(nodes.begin(),nodes.end(),greater<>());
+    int idx=lower_bound(nodes.begin(),nodes.end(),pair{thres+1,0},greater<>())-nodes.begin();
+    ans_map.resize(idx+1,vector<int>(n+1,INF));
+    two_map.resize(idx+1,vector<int>(n+1,INF));
+    for(i=0;i<idx;i++){
+        int u=nodes[i].second;
+        rarr[u]=i+1;
+        auto &two_mapu=two_map[i+1];
+        for(auto&[v,w]:adj[u]) {
+            two_mapu[v]=min(two_mapu[v],w);
+            for(auto &[x,w1]:adj[v]) {
+                if(x==u)continue;
+                two_mapu[x]=min(two_mapu[x],w+w1);
+            }
+        }
+    }
+    while(q--){
+        int u,v;
+        cin>>u>>v;
+        if(adj[u].size()<adj[v].size()) {
+            swap(u,v);
+        }
+        if(rarr[u]) {
+            auto&ans_mapu=ans_map[rarr[u]];
+            auto&two_mapu=two_map[rarr[u]];
+            if(ans_mapu[v]!=INF){
+                cout<<ans_mapu[v]<<"\n";
+            }
+            else{
+                int ans=two_mapu[v];
+                for(auto &[x,w]:adj[v]){
+                    if(two_mapu[x]!=INF){
+                        ans=min(ans,two_mapu[x]+w);
+                    }
+                }
+                if(ans==INF)ans=-1;
+                cout<<(ans_mapu[v]=ans)<<"\n";
+            }
+        }
+        else{
+            int ans=INF;
+            auto it=lower_bound(adj[u].begin(), adj[u].end(), pair{v, 0});
+            if(it!=adj[u].end() && it->first==v){
+                ans=it->second;
+            }
+            for(auto&[x, w1]:adj[u]) {
+                for(auto& [y, w2]: adj[v]) {
+                    if(x==y){
+                        ans=min(ans,w1+w2);
+                    }
+                    auto it2=lower_bound(adj[x].begin(), adj[x].end(), pair{y, 0});
+                    if(it2==adj[x].end() || it2->first!=y)continue;
+                    else ans=min(ans,w1+w2+it2->second);
+                }
+            }
+            if(ans==INF)cout<<-1<<"\n";
+            else cout<<ans<<"\n";
+        }
+    }
+}
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() { ll i, j, k; }
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//  cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+        cout << "\n";
+    }
+    return 0;
+}
