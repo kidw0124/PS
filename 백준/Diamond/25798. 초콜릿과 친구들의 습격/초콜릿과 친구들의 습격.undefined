@@ -1,0 +1,132 @@
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+constexpr ll mod=1e9+7;
+ll modinverse(ll a, ll m) {
+    ll m0 = m, t, q;
+    ll x0 = 0, x1 = 1;
+    if (m == 1) return 0;
+    while (a > 1) {
+        q = a / m;
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+}
+template <ll mod=mod>
+struct mint{
+    ll x;
+    mint(ll x=0):x((x%mod+mod)%mod){}
+    mint operator-() const { return mint(-x);}
+    mint& operator+=(const mint a) {
+        if((x += a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator-=(const mint a) {
+        if((x += mod-a.x) >= mod) x -= mod;
+        return *this;
+    }
+    mint& operator*=(const mint a) {
+        (x *= a.x) %= mod;
+        return *this;
+    }
+    mint& operator/=(const mint a) {
+        return (*this) *= a.inv();
+    }
+    mint operator+(const mint a) const {
+        mint res(*this);
+        return res+=a;
+    }
+    mint operator-(const mint a) const {
+        mint res(*this);
+        return res-=a;
+    }
+    mint operator*(const mint a) const {
+        mint res(*this);
+        return res*=a;
+    }
+    mint operator/(const mint a) const {
+        mint res(*this);
+        return res/=a;
+    }
+    mint inv() const {
+        return modinverse(x, mod);
+    }
+    friend ostream& operator<<(ostream& os, const mint& a) {
+        return os << a.x;
+    }
+    friend istream& operator>>(istream& is, mint& a) {
+        ll t;
+        is >> t;
+        a = mint<mod>(t);
+        return is;
+    }
+    explicit operator ll() const { return x; }
+    explicit operator int() const { return x; }
+    explicit operator bool() const { return x; }
+    explicit operator double() const { return x; }
+    explicit operator string() const { return to_string(x); }
+};
+constexpr int INF=1e9;
+void solve(ll testcase) {
+    ll i,j;
+    ll n,m,k;
+    cin>>n>>m>>k;
+    vector<pll>arr(k);
+    ll w=(n*m)>>1,b=(n*m)>>1;
+    for(auto&[x,y]:arr)cin>>x>>y,((x+y)&1?w:b)--;
+    if(((!count(arr.begin(), arr.end(),pair{1ll,1ll})&&count(arr.begin(), arr.end(),pair{1ll,2ll})&&count(arr.begin(), arr.end(),pair{2ll,1ll}))||
+         (!count(arr.begin(), arr.end(),pair{n,1ll})&&count(arr.begin(), arr.end(),pair{n,2ll})&&count(arr.begin(), arr.end(),pair{n-1,1ll}))||
+         (!count(arr.begin(), arr.end(),pair{1ll,m})&&count(arr.begin(), arr.end(),pair{1ll,m-1})&&count(arr.begin(), arr.end(),pair{2ll,m}))||
+         (!count(arr.begin(), arr.end(),pair{n,m})&&count(arr.begin(), arr.end(),pair{n,m-1})&&count(arr.begin(), arr.end(),pair{n-1,m})))
+         &&w==b&&k==4)
+        cout<<min(w,b)-1<<'\n';
+    else cout<<min(w,b)<<'\n';
+
+
+}
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() { ll i, j, k; }
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+    }
+    return 0;
+}
