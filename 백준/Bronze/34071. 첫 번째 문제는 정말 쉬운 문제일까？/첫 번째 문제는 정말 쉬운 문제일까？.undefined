@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n;
+    cin>>n;
+    vector<int>arr(n);
+    for(auto &k:arr)cin>>k;
+    if(ranges::min(arr)==arr[0])cout<<"ez";
+    else if(ranges::max(arr)==arr[0])cout<<"hard";
+    else cout<<"?";
+}
