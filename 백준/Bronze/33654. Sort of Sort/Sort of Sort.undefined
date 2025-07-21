@@ -1,0 +1,10 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    cin.tie(0);
+    int a=-999999999,n;
+    cin>>n;
+    while(cin>>n){
+        if(a<=n)a=n,cout<<a<<' ';
+    }
+}
