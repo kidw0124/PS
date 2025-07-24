@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n;
+    cin>>n;
+    vector<pair<int,int>>arr(n),brr(n);
+    for(auto&[x,y]:arr)cin>>x>>y;
+    for(auto&[x,y]:brr)cin>>x>>y;
+    sort(arr.begin(),arr.end());
+    sort(brr.begin(),brr.end());
+    cout<<brr[0].first-arr[0].first<<' '<<brr[0].second-arr[0].second;
+}
