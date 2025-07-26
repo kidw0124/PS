@@ -1,0 +1,13 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll =long long;
+int main(){
+    ll n;
+    cin>>n;
+    vector<ll>arr(n);
+    for(auto&x:arr)cin>>x;
+    for(ll i=n-2;i>=0;i--){
+        arr[i]=min(arr[i+1],arr[i]);
+    }
+    cout<<accumulate(arr.begin(),arr.end(),0ll);
+}
