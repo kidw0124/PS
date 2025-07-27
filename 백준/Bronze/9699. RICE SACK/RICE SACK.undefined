@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int t;
+    cin>>t;
+    for(int i=0;i<t;i++){
+        vector<int>arr(5);
+        for(auto&x:arr)cin>>x;
+        cout<<"Case #"<<i+1<<": "<<ranges::max(arr)<<'\n';
+    }
+}
