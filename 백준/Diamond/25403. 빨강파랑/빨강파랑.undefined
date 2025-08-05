@@ -1,0 +1,196 @@
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+using ld= long double;
+const ll mod=1e9+7;
+ll modinverse(ll a, ll m) {
+    ll m0 = m, t, q;
+    ll x0 = 0, x1 = 1;
+    if (m == 1) return 0;
+    while (a > 1) {
+        q = a / m;
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+}
+
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+struct Segment_Lazy{
+    struct Node{
+        ll mini,maxi;
+        ll min_index,max_index;
+        Node() : mini(1e9), maxi(-1e9), min_index(-1), max_index(-1) {}
+        Node(ll m, ll M, ll mi, ll ma) : mini(m), maxi(M), min_index(mi), max_index(ma) {}
+    };
+    ll n;
+    vector<Node>segtree;
+    vector<ll>prop;
+    Segment_Lazy(int n){
+        segtree.resize(2<<(32-__builtin_clz(n)));
+        prop.resize(2<<(32-__builtin_clz(n)));
+        this->n=n;
+        seg_init(1,0,n-1);
+    }
+    void seg_init(int nod, int l, int r){
+        if(l==r){
+            segtree[nod]=Node(0,0,l,l);
+            return;
+        }
+        int mid=(l+r)>>1;
+        seg_init(nod<<1,l,mid);
+        seg_init(nod<<1|1,mid+1,r);
+        auto [lmin,lmax,lminidx,lmaxidx]=segtree[nod<<1];
+        auto [rmin,rmax,rminidx,rmaxidx]=segtree[nod<<1|1];
+        if(lmin<rmin)segtree[nod].mini=lmin,segtree[nod].min_index=lminidx;
+        else segtree[nod].mini=rmin,segtree[nod].min_index=rminidx;
+        if(lmax>rmax)segtree[nod].maxi=lmax,segtree[nod].max_index=lmaxidx;
+        else segtree[nod].maxi=rmax,segtree[nod].max_index=rmaxidx;
+    }
+    void seg_prop(int nod){
+        prop[nod<<1]+=prop[nod];
+        segtree[nod<<1].mini+=prop[nod];
+        segtree[nod<<1].maxi+=prop[nod];
+        prop[nod<<1|1]+=prop[nod];
+        segtree[nod<<1|1].mini+=prop[nod];
+        segtree[nod<<1|1].maxi+=prop[nod];
+        prop[nod]=0;
+    }
+    void seg_update(int nod, int l, int r, int s, int e, ll val){
+        if(e<l || r<s)return;
+        if(s<=l && r<=e) {
+            segtree[nod].mini+=val;
+            segtree[nod].maxi+=val;
+            prop[nod]+=val;
+            return;
+        }
+        seg_prop(nod);
+        int mid=(l+r)>>1;
+        seg_update(nod<<1,l,mid,s,e,val);
+        seg_update(nod<<1|1,mid+1,r,s,e,val);
+        auto [lmin,lmax,lminidx,lmaxidx]=segtree[nod<<1];
+        auto [rmin,rmax,rminidx,rmaxidx]=segtree[nod<<1|1];
+        if(lmin<rmin)segtree[nod].mini=lmin,segtree[nod].min_index=lminidx;
+        else segtree[nod].mini=rmin,segtree[nod].min_index=rminidx;
+        if(lmax>rmax)segtree[nod].maxi=lmax,segtree[nod].max_index=lmaxidx;
+        else segtree[nod].maxi=rmax,segtree[nod].max_index=rmaxidx;
+    }
+    Node seg_query(int nod, int l, int r, int s, int e){
+        if(e<l || r<s)return Node();
+        if(s<=l && r<=e){
+            return segtree[nod];
+        }
+        seg_prop(nod);
+        int mid=(l+r)>>1;
+        Node left=seg_query(nod<<1,l,mid,s,e);
+        Node right=seg_query(nod<<1|1,mid+1,r,s,e);
+        Node res;
+        if(left.mini<right.mini)res.mini=left.mini,res.min_index=left.min_index;
+        else res.mini=right.mini,res.min_index=right.min_index;
+        if(left.maxi>right.maxi)res.maxi=left.maxi,res.max_index=left.max_index;
+        else res.maxi=right.maxi,res.max_index=right.max_index;
+        return res;
+    }
+    void update(int s, int e, ll val){
+        seg_update(1,0,n-1,s,e,val);
+    }
+    Node query(int s, int e){
+        return seg_query(1,0,n-1,s,e);
+    }
+};
+
+void preprocess() {
+    ll i, j, k;
+
+}
+
+void solve(ll testcase) {
+    ll i,j;
+    ll n, m, w, h;
+    cin>>n>>m>>w>>h;
+    vector<pll>pts(n+m);
+    map<ll,vector<pair<pll,ll>>>mp;
+    vector<ll>yrr;
+    map<ll,ll>ryrr;
+    for(i=0;i<n;i++){
+        cin>>pts[i].first>>pts[i].second;
+        mp[pts[i].first-w].push_back({{pts[i].second-h,pts[i].second},1});
+        mp[pts[i].first+1].push_back({{pts[i].second-h,pts[i].second},-1});
+        yrr.push_back(pts[i].second-h);
+        yrr.push_back(pts[i].second);
+    }
+    for(i=0;i<m;i++){
+        cin>>pts[i+n].first>>pts[i+n].second;
+        mp[pts[i+n].first-w].push_back({{pts[i+n].second-h,pts[i+n].second},-1});
+        mp[pts[i+n].first+1].push_back({{pts[i+n].second-h,pts[i+n].second},1});
+        yrr.push_back(pts[i+n].second-h);
+        yrr.push_back(pts[i+n].second);
+    }
+    sort(yrr.begin(),yrr.end());
+    yrr.erase(unique(yrr.begin(),yrr.end()),yrr.end());
+    for(i=0;i<yrr.size();i++){
+        ryrr[yrr[i]]=i;
+    }
+    ll ans=-1;
+    ll px,py;
+    Segment_Lazy st(yrr.size());
+    for(auto&[k,v]:mp){
+        debug<< k<<" :\n";
+        for(auto&[p,val]:v){
+            st.update(ryrr[p.first],ryrr[p.second],val);
+            debug<<p.first<<" "<<p.second<<" "<<val<<"\n";
+        }
+        auto [mini,maxi,minidx,maxidx]=st.query(0,yrr.size()-1);
+        debug<<k<<" : "<<mini<<" "<<maxi<<" "<<minidx<<" "<<maxidx<<"\n";
+        mini=abs(mini);
+        maxi=abs(maxi);
+        if(mini>=maxi&&mini>ans){
+            ans=mini,px=k,py=yrr[minidx];
+        }
+        else if(maxi>=mini&&maxi>ans){
+            ans=maxi,px=k,py=yrr[maxidx];
+        }
+    }
+    cout<<ans<<"\n";
+    cout<<px<<" "<<py<<"\n";
+}
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+    }
+    return 0;
+}
