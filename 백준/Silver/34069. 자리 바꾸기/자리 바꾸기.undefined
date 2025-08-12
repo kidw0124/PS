@@ -1,0 +1,26 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n,m;
+    cin>>n>>m;
+    vector arr(n,vector(m,0));
+    for(auto&v:arr)for(auto&k:v)cin>>k;
+    if(n*m%2==0){
+        cout<<"Yes\n";
+        if(n%2==0){
+            for(int i=0;i<n;i+=2){
+                for(auto&k:arr[i+1])cout<<k<<" ";cout<<"\n";
+                for(auto&k:arr[i])cout<<k<<" ";cout<<"\n";
+            }
+        }
+        else{
+            for(auto&v:arr){
+                for(int i=0;i<m;i+=2){
+                    cout<<v[i+1]<<" "<<v[i]<<" ";
+                }
+                cout<<"\n";
+            }
+        }
+    }
+    else cout<<"No";
+}
