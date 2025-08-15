@@ -1,0 +1,8 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    double x=0.4330127018922194;
+    double l;
+    cin>>l;
+    cout<<fixed<<setprecision(9)<<l*l*x;
+}
