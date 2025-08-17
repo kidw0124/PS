@@ -1,0 +1,14 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int a,b,c,d,e,f;
+    cin>>a>>b>>c>>d>>e>>f;
+    a=a*3+b*2+c;d=d*3+e*2+f;
+    if(a>d){
+        cout<<"A";
+    }
+    else if(a<d){
+        cout<<"B";
+    }
+    else cout<<"T";
+}
