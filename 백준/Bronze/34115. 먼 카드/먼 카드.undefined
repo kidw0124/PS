@@ -1,0 +1,14 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n;
+    cin>>n;
+    vector<int>arr(2*n),cnt(n+1);
+    for(auto&k:arr)cin>>k;
+    auto brr=arr;
+    ranges::reverse(brr);
+    for(int i=1;i<=n;i++){
+        cnt[i]=2*n-2-(ranges::find(arr,i)-arr.begin())-(ranges::find(brr,i)-brr.begin());
+    }
+    cout<<ranges::max(cnt);
+}
