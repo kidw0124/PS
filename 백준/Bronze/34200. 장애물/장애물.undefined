@@ -1,0 +1,21 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n,ans=0,now=0;
+    cin>>n;
+    set<int> arr;
+    while(n--)cin>>now,arr.insert(now);
+    now=0;
+    while(now<*arr.rbegin()){
+        if(arr.count(now+2)){
+            if(arr.count(now+1)){
+                cout<<-1;
+                return 0;
+            }
+            else now++;
+        }
+        else now+=2;
+        ans++;
+    }
+    cout<<ans;
+}
