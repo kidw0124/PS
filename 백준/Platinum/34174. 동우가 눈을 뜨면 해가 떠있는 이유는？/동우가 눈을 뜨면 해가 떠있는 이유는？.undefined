@@ -1,0 +1,154 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+constexpr int MOD=998244353;
+
+template<int MOD_>
+struct mint{
+    int v;
+    mint():v(0){}
+    mint(long long x){ x%=MOD_; if(x<0)x+=MOD_; v=int(x); }
+    explicit operator int() const { return v; }
+    mint operator+(const mint& o)const{ int x=v+o.v; if(x>=MOD_)x-=MOD_; return mint(x); }
+    mint operator-(const mint& o)const{ int x=v-o.v; if(x<0)x+=MOD_; return mint(x); }
+    mint operator*(const mint& o)const{ return mint(1LL*v*o.v%MOD_); }
+    mint& operator+=(const mint& o){ v+=o.v; if(v>=MOD_)v-=MOD_; return *this; }
+    mint& operator-=(const mint& o){ v-=o.v; if(v<0)v+=MOD_; return *this; }
+    mint& operator*=(const mint& o){ v=int(1LL*v*o.v%MOD_); return *this; }
+};
+using m = mint<MOD>;
+
+static inline m fpow(m a,long long e){ m r=1; while(e){ if(e&1) r*=a; a*=a; e>>=1; } return r; }
+
+static inline m inv_elem(m x){ return fpow(x, MOD-2); }
+
+static inline m get_cnt_j(int j, long long n){
+    m ret=0;
+    if(j==0||j==1) return ret;
+    if(j==2){
+        ret = m(n)*m(n-1)*m(n-2)*m(n-3)*inv_elem(m(24));
+        if(n%2==0)  ret -= m(n)*m(n-2)*m(5*n-36)*inv_elem(m(16));
+        if(n%4==0)  ret -= m(n)*m(9)*inv_elem(m(4));
+        if(n%6==0)  ret -= m(n)*m(19*n-110)*inv_elem(m(2));
+        if(n%12==0) ret += m(n)*m(54);
+        if(n%18==0) ret += m(n)*m(84);
+        if(n%24==0) ret += m(n)*m(50);
+        if(n%30==0) ret -= m(n)*m(24);
+        if(n%42==0) ret -= m(n)*m(100);
+        if(n%60==0) ret -= m(n)*m(432);
+        if(n%84==0) ret -= m(n)*m(204);
+        if(n%90==0) ret -= m(n)*m(144);
+        if(n%120==0)ret -= m(n)*m(204);
+        if(n%210==0)ret -= m(n)*m(144);
+        return ret;
+    }
+    if(j==3){
+        if(n%2==0)  ret += m(n)*m(n-2)*m(5*n-38)*inv_elem(m(48));
+        if(n%4==0)  ret += m(n)*inv_elem(m(4))*m(3);
+        if(n%6==0)  ret += m(n)*m(7*n-38)*inv_elem(m(6));
+        if(n%12==0) ret -= m(n)*m(8);
+        if(n%18==0) ret -= m(n)*m(20);
+        if(n%24==0) ret -= m(n)*m(16);
+        if(n%30==0) ret -= m(n)*m(19);
+        if(n%42==0) ret += m(n)*m(8);
+        if(n%60==0) ret += m(n)*m(68);
+        if(n%84==0) ret += m(n)*m(60);
+        if(n%90==0) ret += m(n)*m(48);
+        if(n%120==0)ret += m(n)*m(60);
+        if(n%210==0)ret += m(n)*m(48);
+        return ret;
+    }
+    if(j==4){
+        if(n%6==0)  ret += m(n)*m(7*n-42)*inv_elem(m(12));
+        if(n%12==0) ret -= m(n)*inv_elem(m(2))*m(5);
+        if(n%18==0) ret -= m(n)*m(4);
+        if(n%24==0) ret += m(n)*m(3);
+        if(n%42==0) ret += m(n)*m(6);
+        if(n%60==0) ret += m(n)*m(34);
+        if(n%84==0) ret -= m(n)*m(6);
+        if(n%120==0)ret -= m(n)*m(6);
+        return ret;
+    }
+    if(j==5){
+        if(n%6==0)  ret += m(n)*m(n-6)*inv_elem(m(4));
+        if(n%12==0) ret -= m(n)*inv_elem(m(2))*m(3);
+        if(n%24==0) ret -= m(n)*m(2);
+        if(n%42==0) ret += m(n)*m(4);
+        if(n%84==0) ret += m(n)*m(6);
+        if(n%120==0)ret += m(n)*m(6);
+        return ret;
+    }
+    if(j==6){
+        if(n%30==0) ret += m(n)*m(4);
+        if(n%60==0) ret -= m(n)*m(4);
+        return ret;
+    }
+    if(j==7){
+        if(n%30==0) ret += m(n);
+        if(n%60==0) ret += m(n)*m(4);
+        return ret;
+    }
+    return ret;
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#endif
+    const int MAXN=10000;
+
+    vector<int> invi(MAXN+5,0);
+    invi[1]=1;
+    for(int i=2;i<=MAXN+4;i++) invi[i]=int((MOD - 1LL*(MOD/i)*invi[MOD%i]%MOD)%MOD);
+
+    auto invI = [&](int x)->m{ return m(invi[x]); };
+
+    auto get_exp = [&](int n,int k)->pair<m,m>{
+        m ret=0, ex=0;
+        if(k<2) return {ret,ex};
+        m now = 1;// m(4)*invI(n-1)*invI(n-2)*m(k)*m(k-1)*invI(2);
+        for(int i=0;i<=k;i++){
+            if(i>=2) {
+                m tmp = now * m(i - 1);
+                ret += tmp;
+            }
+            else if(i==1)ex-=now+1;
+            ex+=now;
+            m next_now = now * m(MOD-2) * invI(n-i-1) * m(k-i) * invI(i+1);
+            now = next_now;
+        }
+        return {ret,ret+ex};
+    };
+
+    string out;
+    out.reserve(1200000);
+
+    for(int n=1;n<=MAXN;n++){
+        if(n<=2){ out += "-1\n"; continue; }
+        m v=n, e=n;
+        e += m(n)*m(n-3)*inv_elem(m(n-1));
+        for(int j=0;j<=7;j++){
+            m cnt = get_cnt_j(j, n);
+            auto [expv, expe] = get_exp(n, j);
+            v += cnt*expv;
+            e += cnt*expe;
+        }
+        if(n%2==0){
+            auto [expv, expe] = get_exp(n, n/2);
+            v += expv;
+            e += expe;
+        }
+        m ans = m(1)+e-v;
+//        out+=to_string((int)v);
+//        out += ' ';
+//        out+= to_string((int)e);
+//        out += ' ';
+        out += to_string((int)ans);
+        out += '\n';
+    }
+    cout<<out;
+    return 0;
+}
