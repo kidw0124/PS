@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main(int argc, char* argv[]){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    if(argc > 1){
+        string argv1 = argv[1];
+        if(argv1 == "--input"){
+            freopen(argv[2], "r", stdin);
+            freopen(argv[3], "w", stdout);
+        }
+    }
+    const string orange = "orange";
+    string str;
+    cin >> str;
+    ll n = str.size(), m = orange.size();
+    vector<vector<ll>> dp(n, vector<ll>(m));
+    vector<vector<char>> prv(n, vector<char>(m));
+    if(str[0] == orange[0]){
+        dp[0][0] = 1;
+        prv[0][0] = 2;
+    }
+    for(ll j = 1; j < m; j++){
+        dp[0][j] = 0;
+        prv[0][j] = 0;
+    }
+    for(ll i = 1; i < n; i++){
+        for(ll j = 0; j < m; j++){
+            if(str[i] == orange[j]){
+                if(j == 0){
+                    dp[i][j] = dp[i-1][j] + 1;
+                    prv[i][j] = 2;
+                }
+                else if(dp[i][j-1]){
+                    ll a = dp[i-1][j] + 1;
+                    ll b = dp[i-1][j-1] + 1;
+                    if(a >= b){
+                        dp[i][j] = a;
+                        prv[i][j] = 2;
+                    } else {
+                        dp[i][j] = b;
+                        prv[i][j] = 1;
+                    }
+                }
+                else{
+                    dp[i][j] = dp[i-1][j];
+                    prv[i][j] = 0;
+                }
+            }
+            else{
+                dp[i][j] = dp[i-1][j];
+                prv[i][j] = 0;
+            }
+        }
+    }
+    cout << dp[n-1][m-1] << '\n';
+    string seq;
+    ll i = n-1, j = m-1;
+    while(i >= 0){
+        if(prv[i][j] == 1){
+            seq.push_back(orange[j]);
+            i--; j--;
+        }
+        else if(prv[i][j] == 2){
+            seq.push_back(orange[j]);
+            i--;
+        }
+        else{
+            i--;
+        }
+    }
+    reverse(seq.begin(), seq.end());
+    cout << seq << '\n';
+    return 0;
+}
