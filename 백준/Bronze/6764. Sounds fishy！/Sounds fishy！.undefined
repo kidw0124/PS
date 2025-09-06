@@ -1,0 +1,23 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    vector<int>arr(4);
+    for(auto&k:arr)cin>>k;
+    auto brr=arr;
+    if(arr[0]<arr[1]&&arr[1]<arr[2]&&arr[2]<arr[3]){
+        cout<<"Fish Rising";
+        return 0;
+    }
+    ranges::reverse(arr);
+    if(arr[0]<arr[1]&&arr[1]<arr[2]&&arr[2]<arr[3]){
+        cout<<"Fish Diving";
+        return 0;
+    }
+    ranges::sort(arr);
+    if(arr[0]==arr[3]){
+        cout<<"Fish At Constant Depth";
+        return 0;
+    }
+    cout<<"No Fish";
+    
+}
