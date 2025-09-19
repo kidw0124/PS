@@ -1,0 +1,72 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+void setup() {
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+}
+constexpr ll mod=1e9+7;
+
+ll fsquare(ll l, ll r, vector<vector<ll> >& square, vector<vector<vector<ll> > >& cube, ll b);
+ll fcube(ll l, ll r, ll k, vector<vector<ll> >& square, vector<vector<vector<ll> > >& cube, ll b);
+
+ll fsquare(ll l, ll r, vector<vector<ll> >& square, vector<vector<vector<ll> > >& cube, ll b) {
+    if(square[l][r] > 0) {
+        return square[l][r];
+    }
+    ll& res = square[l][r];
+
+    res = INT64_MAX;
+    for(ll k = l; k <= r; k++) {
+        res = std::min(res, fcube(l, r, k, square, cube, b));
+    }
+
+    return res;
+}
+
+ll fcube(ll l, ll r, ll k, vector<vector<ll> >& square, vector<vector<vector<ll> > >& cube, ll b) {
+    assert(l <= k && k <= r);
+    if (cube[l][r][k] > 0) {
+        return cube[l][r][k];
+    }
+    ll& res = cube[l][r][k];
+
+    if(l == r) {
+        assert(l == k);
+        return res = k+1;
+    }
+
+    ll left = k == l ? 0 : (fsquare(l, k-1, square, cube, b) + (k+1));
+    ll right = k == r ? 0 : (fsquare(k+1, r, square, cube, b) + b);
+    return res = std::max(left, right);
+}
+
+void solve(ll tc){
+    ll n, b; std::cin >> n >> b;
+    vector<vector<ll> > square(n, vector<ll>(n, -1));
+    vector<vector<vector<ll> > > cube(n, vector<vector<ll> >(n, vector<ll>(n, -1)));
+
+    ll res = fsquare(0, n-1, square, cube, b);
+    std::cout << res;
+}
+
+void preprocess(){
+    ll i,j,k;
+}
+
+int main(){
+    setup();preprocess();
+    ll t=1;
+//    cin>>t;
+    for(ll i=0;i<t;i++){
+        solve(t+1);
+    }
+    return 0;
+}
