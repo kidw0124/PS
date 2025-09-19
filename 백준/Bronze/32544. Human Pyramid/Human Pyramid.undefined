@@ -1,0 +1,71 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+void setup() {
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+}
+
+void done(ll y, ll p) {
+    std::vector<ll> digrev;
+    while(y > 0) {
+        digrev.push_back(y % p);
+        y /= p;
+    }
+    std::reverse(digrev.begin(), digrev.end());
+
+    std::cout << p << ' ';
+    for(ll dig : digrev) {
+        if(dig > 10) {
+            char c = 'a' + (dig - 10);
+            std::cout << c;
+        } else {
+            std::cout << dig;
+        }
+    }
+}
+
+struct data_ {
+    int x, l, v, w;
+};
+
+struct value {
+    int x;
+    long double y;
+    bool operator < (const value &r) const {
+        return y > r.y;
+    }
+};
+
+vector <data_> V[100100];
+long double dist[100100];
+int check[100100];
+
+void solve(ll tc){
+    ll n;
+    cin>>n;
+    ll h=0;
+    while(h*(h+1)/2<=n)h++;
+    cout<<h-1;
+}
+
+void preprocess(){
+    ll i,j,k;
+}
+
+int main(){
+    setup();preprocess();
+    ll t=1;
+//    cin>>t;
+    for(ll i=0;i<t;i++){
+        solve(t+1);
+    }
+    return 0;
+}
