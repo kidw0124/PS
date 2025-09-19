@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+void setup() {
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+}
+constexpr ll mod=1e9+7;
+constexpr ll maxh=450;
+void solve(ll tc){
+    ll i,j,k;
+    ll n;
+    string str;
+    cin>>n>>str;
+    vector<vector<ll>>dp(n+500,vector<ll>(maxh));
+    dp[0][1]=1;
+    ll ans=0;
+    for(i=0;i<n;i++){
+        for(j=1;j<maxh-1;j++){
+            if(i+1>=n)ans=(ans+dp[i][j])%mod;
+            else if(str[i+1]=='.'){
+                dp[i+1][j]=(dp[i+1][j]+dp[i][j])%mod;
+            }
+            if(i+(j+1)>=n)ans=(ans+dp[i][j])%mod;
+            else if(str[i+(j+1)]=='.'){
+                dp[i+(j+1)][j+1]=(dp[i+(j+1)][j+1]+dp[i][j])%mod;
+            }
+        }
+    }
+    cout<<ans;
+}
+
+void preprocess(){
+    ll i,j,k;
+}
+
+int main(){
+    setup();preprocess();
+    ll t=1;
+//    cin>>t;
+    for(ll i=0;i<t;i++){
+        solve(t+1);
+    }
+    return 0;
+}
