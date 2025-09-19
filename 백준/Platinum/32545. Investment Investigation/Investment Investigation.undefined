@@ -1,0 +1,131 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+void setup() {
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+}
+constexpr ll mod=1e9+7;
+
+struct fenwick {
+    ll n;
+    vector<ll>tree;
+    fenwick(ll n):n(n),tree(n+1){}
+    void update(ll idx, ll v) { for(ll i=idx; i<=n; i+=(i&-i)) tree[i] += v; }
+    ll query(ll idx) { ll ans = 0; for(ll i=idx; i>0; i-=(i&-i)) ans += tree[i]; return ans; }
+    ll query(ll l, ll r){
+        return query(r)-query(max(0ll,l-1));
+    }
+};
+
+struct ord{
+    string s,t;
+    ll p,a;
+    ll idx=0;
+    bool operator<(const auto&r)const{
+        if(p==r.p)return idx>r.idx;
+        return p<r.p;
+    }
+};
+
+void solve(ll tc){
+    ll i,j,k;
+    ll n;
+    cin>>n;
+    vector<ord>arr(n);
+    map<ll,ll>mp;
+    i=0;
+    for(auto&[a,b,c,d,idx]:arr)cin>>a>>b>>c>>d,idx=++i,mp[c]=0;
+    i=0;
+    for(auto&[_,v]:mp){
+        v=++i;
+    }
+    for(auto&[_1,_2,c,_4,_5]:arr)c=mp[c];
+    priority_queue<ord>sellpq,buypq;
+    ll sz=mp.size();
+    fenwick sellfw(sz),buyfw(sz);
+    vector<tuple<ll,ll,ll>>ans;
+    for(const auto [s,t,p,a,idx]:arr){
+//        cout<<"!!!!\n";
+//        cout<<buypq.size()<<' '<<sellpq.size()<<'\n';
+        if(s=="buy"){
+            if(t=="fok"){
+                ll val=sellfw.query(0,p);
+                if(val<a)continue;
+            }
+            ll rem=a;
+            while(rem>0&&sellpq.size()&&-sellpq.top().p<=p){
+                auto sell=sellpq.top();
+                sellpq.pop();
+                if(sell.a>rem){
+                    ans.push_back({sell.idx,idx,rem});
+                    sellfw.update(-sell.p,-rem);
+                    sell.a-=rem;
+                    rem=0;
+                    sellpq.push(sell);
+                }
+                else{
+                    ans.push_back({sell.idx,idx,sell.a});
+                    sellfw.update(-sell.p,-sell.a);
+                    rem-=sell.a;
+                }
+            }
+            if(rem){
+                buyfw.update(p,rem);
+                buypq.push({s,t,p,rem,idx});
+            }
+        }
+        else{
+            if(t=="fok"){
+                ll val=buyfw.query(p,sz);
+                if(val<a)continue;
+            }
+            ll rem=a;
+            while(rem>0&&buypq.size()&&buypq.top().p>=p){
+                auto buy=buypq.top();
+                buypq.pop();
+                if(buy.a>rem){
+                    ans.push_back({idx,buy.idx,rem});
+                    buyfw.update(buy.p,-rem);
+                    buy.a-=rem;
+                    rem=0;
+                    buypq.push(buy);
+                }
+                else{
+                    ans.push_back({idx,buy.idx,buy.a});
+                    buyfw.update(buy.p,-buy.a);
+                    rem-=buy.a;
+                }
+            }
+            if(rem){
+                sellfw.update(p,rem);
+                sellpq.push({s,t,-p,rem,idx});
+            }
+        }
+//        cout<<"????\n";
+    }
+    cout<<ans.size()<<'\n';
+    for(auto&[a,b,c]:ans)cout<<a<<' '<<b<<' '<<c<<'\n';
+
+}
+
+void preprocess(){
+    ll i,j,k;
+}
+
+int main(){
+    setup();preprocess();
+    ll t=1;
+//    cin>>t;
+    for(ll i=0;i<t;i++){
+        solve(t+1);
+    }
+    return 0;
+}
