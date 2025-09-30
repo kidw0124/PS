@@ -1,0 +1,10 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int n;
+    cin>>n;
+    vector<int>arr(n);
+    for(auto&k:arr)cin>>k;
+    cout<<(ranges::min(arr)<48?"False":"True");
+}
