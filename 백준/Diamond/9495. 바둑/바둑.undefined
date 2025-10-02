@@ -1,0 +1,138 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using pll=pair<ll,ll>;
+using ld=long double;
+#ifdef kidw0124
+constexpr bool ddebug=true;
+#else
+constexpr bool ddebug=false;
+#endif
+
+void setup(){
+    if(ddebug){
+        freopen("input.txt","r",stdin);
+        freopen("output.txt","w",stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess(){
+    ll i,j,k;
+
+}
+
+struct Dinic{
+    using flow_t=int;
+    struct Edge{
+        int next;
+        size_t inv;
+        flow_t res;
+    };
+    int n;
+    vector<vector<Edge>>graph;
+    vector<int> q,l,start;
+    void init(int _n){
+        n=_n;
+        graph.resize(n);
+        for(int i=0;i<n;i++)graph[i].clear();
+    }
+    void add_edge(int s, int e, flow_t cap, flow_t caprev=0){
+        Edge forward{e,graph[e].size(),cap};
+        Edge reverse{s,graph[s].size(),caprev};
+        graph[s].push_back(forward);
+        graph[e].push_back(reverse);
+    }
+    bool assign_level(int source, int sink){
+        int t=0;
+        memset(&l[0],0,sizeof(l[0])*l.size());
+        l[source]=1;
+        q[t++]=source;
+        for(int h=0;h<t&&!l[sink];h++){
+            int cur=q[h];
+            for(const auto&e:graph[cur]){
+                if(l[e.next]||e.res==0)continue;
+                l[e.next]=l[cur]+1;
+                q[t++]=e.next;
+            }
+        }
+        return l[sink]!=0;
+    }
+    flow_t block_flow(int cur, int sink, flow_t current){
+        if(cur==sink)return current;
+        for(int&i=start[cur];i<graph[cur].size();i++){
+            auto&e=graph[cur][i];
+            if(e.res==0||l[e.next]!=l[cur]+1)continue;
+            if(flow_t res = block_flow(e.next,sink,min(e.res,current))){
+                e.res-=res;
+                graph[e.next][e.inv].res+=res;
+                return res;
+            }
+        }
+        return 0;
+    }
+    flow_t solve(int source, int sink){
+        q.resize(n);
+        l.resize(n);
+        start.resize(n);
+        flow_t ans=0;
+        while(assign_level(source,sink)){
+            memset(&start[0],0,sizeof(start[0])*n);
+            while(flow_t flow=block_flow(source,sink,numeric_limits<flow_t>::max())){
+                ans+=flow;
+            }
+        }
+        return ans;
+    }
+};
+void solve(ll tc){
+    int i,j,k;
+    int n;
+    cin>>n;
+    Dinic dinic;
+    dinic.init(n*n+2);
+    auto pttonum=[&](int x, int y){
+        return x*n+y;
+    };
+    vector<string>arr(n);
+    int source=n*n, sink=n*n+1;
+    for(i=0;i<n;i++)cin>>arr[i];
+    int dx[4]={1,-1,0,0}, dy[4]={0,0,1,-1};
+    int cnt=0;
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            if(arr[i][j]=='o'){
+                dinic.add_edge(source,pttonum(i,j),1);
+                cnt++;
+            }
+            if(arr[i][j]=='.'){
+                dinic.add_edge(pttonum(i,j),sink,1);
+                cnt++;
+            }
+            for(k=0;k<4;k++){
+                int ni=i+dx[k], nj=j+dy[k];
+                if(ni<0||ni>=n||nj<0||nj>=n)continue;
+                if(arr[i][j]=='o'&&arr[ni][nj]=='.'){
+                    dinic.add_edge(pttonum(i,j),pttonum(ni,nj),1);
+                }
+            }
+        }
+    }
+
+    int res=dinic.solve(source,sink);
+    cout<<cnt-res;
+
+}
+
+int main(){
+    setup();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
