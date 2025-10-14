@@ -1,0 +1,98 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using pll=pair<ll,ll>;
+using ld=long double;
+#ifdef kidw0124
+constexpr bool ddebug=true;
+#else
+constexpr bool ddebug=false;
+#endif
+
+void setup(){
+    if(ddebug){
+        freopen("input.txt","r",stdin);
+        freopen("output.txt","w",stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess(){
+    ll i,j,k;
+
+}
+struct Point{
+    ll x,y;
+    Point operator-(const Point&r)const{
+        return {x-r.x,y-r.y};
+    }
+};
+struct Line{
+    Point pos, dir;
+};
+
+void solve(ll tc){
+    ll i,j,k;
+    ll n,m;
+    cin>>n>>m;
+    vector<vector<pll>>grp(n+1);
+    vector<vector<ll>>chi(n+1);
+    vector<pll>par(n+1);
+    ll mini=0,maxi=1e15;
+    for(i=0;i<n-1;i++){
+        ll u,v,w;
+        cin>>u>>v>>w;
+        grp[u].push_back({v,w});
+        grp[v].push_back({u,w});
+        mini=max(mini,w);
+    }
+    function<void(ll,ll)> dfs=[&](ll x,ll p){
+        for(auto&[v,w]:grp[x]){
+            if(v!=p){
+                par[v]={x,w};
+                chi[x].push_back(v);
+                dfs(v,x);
+            }
+        }
+    };
+    dfs(1,-1);
+    auto func=[&](ll d){
+        ll cnt=0;
+        function<ll(ll)>dfs2=[&](ll x){
+            ll t0=0,t1=0;
+            for(auto v:chi[x]){
+                ll tmp=dfs2(v);
+                if(t0<tmp)t1=t0,t0=tmp;
+                else if(t1<tmp)t1=tmp;
+            }
+            bool g=0;
+            if(t0+t1>d)g=1;
+            if(t0+par[x].second>d)g=1;
+            cnt+=g;
+            if(g)return par[x].second;
+            else return t0+par[x].second;
+        };
+        dfs2(1);
+        return cnt;
+    };
+    while(mini<maxi){
+        ll mid=mini+maxi>>1;
+        if(func(mid)>m)mini=mid+1;
+        else maxi=mid;
+    }
+    cout<<mini;
+
+}
+
+int main(){
+    setup();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
