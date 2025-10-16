@@ -1,0 +1,175 @@
+#define private public
+#include <bitset>
+#undef private
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimize("inline")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using ull = unsigned long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+using ld= long double;
+constexpr ll MAXN=2e5+8;
+struct MinCostFlow {
+    typedef int cap_t;
+    typedef int cost_t;
+
+    bool iszerocap(cap_t cap) { return cap == 0; }
+
+    struct edge {
+        int target;
+        cost_t cost;
+        cap_t residual_capacity;
+        cap_t orig_capacity;
+        size_t revid;
+    };
+
+    int n;
+    vector<vector<edge>> graph;
+
+    MinCostFlow(int n) : graph(n), n(n) {}
+
+    void addEdge(int s, int e, cost_t cost, cap_t cap) {
+        if (s == e) return;
+        edge forward{ e, cost, cap, cap, graph[e].size() };
+        edge backward{ s, -cost, 0, 0, graph[s].size() };
+        graph[s].emplace_back(forward);
+        graph[e].emplace_back(backward);
+    }
+
+    pair<cost_t, cap_t> augmentShortest(int s, int e, cap_t flow_limit) {
+        auto infinite_cost = numeric_limits<cost_t>::max();
+        auto infinite_flow = numeric_limits<cap_t>::max();
+        vector<pair<cost_t, cap_t>> dist(n, make_pair(infinite_cost, 0));
+        vector<int> from(n, -1), v(n);
+
+        dist[s] = pair<cost_t, cap_t>(0, infinite_flow);
+        queue<int> q;
+        v[s] = 1; q.push(s);
+        while(!q.empty()) {
+            int cur = q.front();
+            v[cur] = 0; q.pop();
+            for (const auto& e : graph[cur]) {
+                if (iszerocap(e.residual_capacity)) continue;
+                auto next = e.target;
+                auto ncost = dist[cur].first + e.cost;
+                auto nflow = min(dist[cur].second, e.residual_capacity);
+                if (dist[next].first > ncost) {
+                    dist[next] = make_pair(ncost, nflow);
+                    from[next] = e.revid;
+                    if (v[next]) continue;
+                    v[next] = 1; q.push(next);
+                }
+            }
+        }
+
+        auto p = e;
+        auto pathcost = dist[p].first;
+        auto flow = dist[p].second;
+        if (iszerocap(flow)|| (flow_limit <= 0 && pathcost >= 0)) return pair<cost_t, cap_t>(0, 0);
+        if (flow_limit > 0) flow = min(flow, flow_limit);
+
+        while (from[p] != -1) {
+            auto nedge = from[p];
+            auto np = graph[p][nedge].target;
+            auto fedge = graph[p][nedge].revid;
+            graph[p][nedge].residual_capacity += flow;
+            graph[np][fedge].residual_capacity -= flow;
+            p = np;
+        }
+        return make_pair(pathcost * flow, flow);
+    }
+
+    pair<cost_t,cap_t> solve(int s, int e, cap_t flow_minimum = numeric_limits<cap_t>::max()) {
+        cost_t total_cost = 0;
+        cap_t total_flow = 0;
+        for(;;) {
+            auto res = augmentShortest(s, e, flow_minimum - total_flow);
+            if (res.second <= 0) break;
+            total_cost += res.first;
+            total_flow += res.second;
+        }
+        return make_pair(total_cost, total_flow);
+    }
+};
+
+void solve(ll testcase) {
+    ll i,j;
+    ll n,m;
+    cin>>n>>m;
+    vector<tuple<pll,pll,ll>>row(n),col(m);
+    for(auto&[p1,p2,w]:row){
+        cin>>p1.first>>p1.second>>p2.first>>p2.second>>w;
+        if(p1.first>p2.first)swap(p1,p2);
+    }
+    for(auto&[p1,p2,w]:col){
+        cin>>p1.first>>p1.second>>p2.first>>p2.second>>w;
+        if(p1.second>p2.second)swap(p1,p2);
+    }
+    MinCostFlow mcf(n+m+2);
+    ll source=n+m,sink=n+m+1;
+    for(i=0;i<n;i++){
+        mcf.addEdge(source,i,0,1);
+        debug<<i+1<<"th row : y="<<get<0>(row[i]).second<<" x1="<<get<0>(row[i]).first<<" x2="<<get<1>(row[i]).first<<"\n";
+        debug<<"add edge "<<source<<" "<<i<<"\n";
+    }
+    for(i=0;i<m;i++){
+        mcf.addEdge(n+i,sink,0,1);
+        debug<<i+1<<"th col : x="<<get<0>(col[i]).first<<" y1="<<get<0>(col[i]).second<<" y2="<<get<1>(col[i]).second<<"\n";
+        debug<<"add edge "<<n+i<<" "<<sink<<"\n";
+    }
+    for(i=0;i<n;i++){
+        auto&[r1,r2,w1]=row[i];
+        for(j=0;j<m;j++){
+            auto&[c1,c2,w2]=col[j];
+            auto&ry=r1.second,cx=c1.first;
+            auto&rx1=r1.first,rx2=r2.first,cy1=c1.second,cy2=c2.second;
+            if(rx1<=cx&&cx<=rx2&&cy1<=ry&&ry<=cy2){
+                mcf.addEdge(i,n+j,-(w1*w2),1);
+                debug<<"add edge "<<i<<" "<<n+j<<"\n";
+            }
+        }
+    }
+    auto [cost,flow]=mcf.solve(source,sink);
+    cout<<flow<<" "<<-cost<<"\n";
+}
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+}
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+    }
+    return 0;
+}
