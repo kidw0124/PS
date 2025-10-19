@@ -1,0 +1,7 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string str;cin>>str;
+    cout<<ranges::count(str,'a')+ranges::count(str,'e')+ranges::count(str,'i')+ranges::count(str,'o')+ranges::count(str,'u')<<" ";
+    cout<<ranges::count(str,'a')+ranges::count(str,'e')+ranges::count(str,'i')+ranges::count(str,'o')+ranges::count(str,'u')+ranges::count(str,'y')<<" ";
+}
