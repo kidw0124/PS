@@ -1,0 +1,9 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    long double a,b;
+    cin>>a>>b;
+    if(a>25*b*b)cout<<"Overweight";
+    else if(a>=18.5*b*b)cout<<"Normal weight";
+    else cout<<"Underweight";
+}
