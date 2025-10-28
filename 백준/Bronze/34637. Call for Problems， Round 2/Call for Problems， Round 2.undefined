@@ -1,0 +1,13 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n,m;
+    cin>>n>>m;
+    set<int>st;
+    while(n--){
+        int x;
+        cin>>x;
+        st.insert(x);
+    }
+    cout<<min(m,(int)st.size());
+}
