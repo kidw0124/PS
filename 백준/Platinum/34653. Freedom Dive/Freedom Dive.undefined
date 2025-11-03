@@ -1,0 +1,73 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using pll=pair<ll,ll>;
+using ull=unsigned long long;
+using ld=long double;
+
+constexpr ll mod=998244353;
+int N;
+struct fenwick {
+    int tree[500100];
+    void init(){
+        memset(tree,0,sizeof(tree));
+    }
+    void add(int n, int v) {
+        for(int i=n; i<=N; i+=(i&-i)) tree[i] += v;
+    }
+    int query(int n){
+        int ret = 0;
+        for(int i=n; i>0; i-=(i&-i)) ret += tree[i];
+        return ret;
+    }
+};
+
+void solve(ll tc){
+    ll i,j,k,n,m;
+    cin>>n;
+    vector<pll>arr(n);
+    for(auto&[x,y]:arr)cin>>x>>y;
+    vector<pll>lo;
+    auto ccw=[&](const pll&a, const pll&b, const pll&c){
+        pll bma={b.first-a.first,b.second-a.second}
+            ,cma={c.first-a.first,c.second-a.second};
+        return bma.first*cma.second-bma.second*cma.first;
+    };
+    for(const auto&p:arr){
+        while(lo.size()>=2 && ccw(*++lo.rbegin(),*lo.rbegin(),p)<=0)lo.pop_back();
+        lo.push_back(p);
+    }
+//    for(auto&[x,y]:lo)cout<<x<<" "<<y<<"\n";
+    ll q;
+    cin>>q;
+    for(i=0;i<q;i++){
+        ll d;
+        cin>>d;
+        auto nit=lower_bound(lo.begin(),lo.end(),pll({d,(ll)1e9+7}));
+        auto it=prev(nit);
+        assert(nit!=it&&nit!=lo.begin());
+        ll p=d*(nit->second-it->second)+nit->first*it->second-nit->second*it->first;
+        ll pp=nit->first-it->first;
+        ll g=gcd(p,pp);
+        cout<<p/g<<" "<<pp/g<<"\n";
+    }
+
+
+
+}
+
+int main(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+    ll t=1;
+//    cin>>t;
+    for(ll tc=1;tc<=t;tc++){
+        solve(tc+1);
+    }
+}
