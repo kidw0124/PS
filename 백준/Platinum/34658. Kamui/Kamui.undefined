@@ -1,0 +1,78 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using ull=unsigned long long;
+using ld=long double;
+
+constexpr ll mod=998244353;
+int N;
+struct fenwick {
+    int tree[500100];
+    void init(){
+        memset(tree,0,sizeof(tree));
+    }
+    void add(int n, int v) {
+        for(int i=n; i<=N; i+=(i&-i)) tree[i] += v;
+    }
+    int query(int n){
+        int ret = 0;
+        for(int i=n; i>0; i-=(i&-i)) ret += tree[i];
+        return ret;
+    }
+};
+
+void solve(ll tc){
+    ll i,j,k,n,m;
+    cin>>n>>m;
+    vector<ll>arr(n+1);
+    N=n+4;
+    fenwick fw;
+    fw.init();
+    for(i=1;i<=n;i++){
+        cin>>arr[i];
+        fw.add(arr[i]+1,1);
+    }
+    ll ans=0;
+    for(i=1;i<=n;i++){
+        ll cnt=n-fw.query(i);
+//        cout<<i<<" "<<cnt<<"\n";
+        ans=(ans+(i-1)*(cnt*(cnt-1)/2%mod)%mod)%mod;
+    }
+
+    for(i=0;i<m;i++){
+        ll idx,v;
+        cin>>idx>>v;
+        if(v==1){
+            ll cnt=n-fw.query(arr[idx]+1);
+            ans=(ans+arr[idx]*cnt)%mod;
+            arr[idx]++;
+            fw.add(arr[idx],-1);
+            fw.add(arr[idx]+1,1);
+        }
+        else{
+            ll cnt=n-fw.query(arr[idx]);
+            ans=(ans-(arr[idx]-1)*(cnt-1))%mod;
+            if(ans<0)ans+=mod;
+            arr[idx]--;
+            fw.add(arr[idx]+1,1);
+            fw.add(arr[idx]+2,-1);
+        }
+        cout<<ans<<"\n";
+    }
+}
+
+int main(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+    ll t=1;
+//    cin>>t;
+    for(ll tc=1;tc<=t;tc++){
+        solve(tc+1);
+    }
+}
