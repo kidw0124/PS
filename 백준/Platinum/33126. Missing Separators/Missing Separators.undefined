@@ -1,0 +1,102 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using pll=pair<ll,ll>;
+
+void solve(ll tc){
+    ll i,j;
+    string str;
+    cin>>str;
+    ll n=str.size();
+    vector<vector<int>>zrr(n,vector<int>(n));
+    auto get_z=[](const string&s){
+        const int n=s.size();vector z(n,0);z[0]=n;
+        for(int i=1,l=-1,r=-1;i<n;i++){
+            if(i<=r)z[i]=min(r-i+1,z[i-l]);
+            while(i+z[i]<n&&s[z[i]]==s[i+z[i]])z[i]++;
+            if(r<i+z[i]-1)l=i,r=i+z[i]-1;
+        }
+        return z;
+    };
+    for(i=0;i<n;i++){
+        auto z=get_z(str.substr(i));
+        assert(z.size()==n-i);
+        for(j=0;j<z.size();j++){
+            zrr[i][i+j]=z[j];
+        }
+    }
+    vector dp(n,vector<pll>(n,{-1,-1}));
+    for(i=0;i<n;i++){
+        dp[0][i]={1,-1};
+    }
+    for(i=0;i<n;i++){
+        auto &z=zrr[i];
+        for(j=i;j<n;j++){
+            if(j)dp[i][j]=max(dp[i][j],dp[i][j-1]);
+            if(dp[i][j].first==-1)continue;
+            if(j==n-1)continue;
+            int nxt=z[j+1];
+            if(i+nxt<j+1){
+                if(j+nxt+1<n&&str[i+nxt]<str[j+nxt+1]){
+                    if(dp[i][j].first+1>dp[j+1][j+nxt+1].first){
+                        dp[j+1][j+nxt+1]={dp[i][j].first+1,i};
+                    }
+                }
+            }
+            else{
+                if(j+1+j+1-i<n&&dp[i][j].first+1>dp[j+1][j+1+j+1-i].first){
+                    dp[j+1][j+1+j+1-i]={dp[i][j].first+1,i};
+                }
+            }
+        }
+    }
+//    for(i=0;i<n;i++){
+//        for(j=0;j<n;j++){
+//            cout<<dp[i][j].first<<" ";
+//        }
+//        cout<<"\n";
+//    }
+    ll ans=-1,d=-1;
+    for(i=0;i<n;i++){
+        if(ans<dp[i][n-1].first)ans=dp[i][n-1].first,d=i;
+    }
+    vector<ll>idx({n,d});
+    while(idx.back()){
+        ll d1=idx.back(),d2=idx[idx.size()-2];
+        idx.push_back(dp[d1][d2-1].second);
+    }
+    ll now=0;
+    idx.pop_back();
+    reverse(idx.begin(), idx.end());
+    cout<<idx.size()<<"\n";
+    for(auto&iii:idx){
+        while(now<iii)cout<<str[now++];
+        cout<<"\n";
+    }
+
+
+}
+
+void setup(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);cout.tie(0);
+#endif
+}
+
+void preprocess(){
+
+}
+
+int main(){
+    setup();
+    preprocess();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
