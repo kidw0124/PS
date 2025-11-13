@@ -1,0 +1,125 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+using pll=pair<ll,ll>;
+
+void setup(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    cin.tie(0)->sync_with_stdio(0);
+#endif
+}
+
+void preprocess(){
+
+}
+
+pll minimaxi(const pll&lef,const pll&rig){
+    return {min(lef.first,rig.first),max(lef.second,rig.second)};
+}
+
+struct segtree{
+    vector<pll>nod;
+    vector<ll>prop;
+    const pll INF={1e18,-1e18};
+    segtree(ll n){
+        nod.resize(4*n);
+        prop.resize(4*n);
+    }
+    void propagate(ll n){
+        prop[n<<1]+=prop[n];
+        nod[n<<1].first+=prop[n];
+        nod[n<<1].second+=prop[n];
+        prop[n<<1|1]+=prop[n];
+        nod[n<<1|1].first+=prop[n];
+        nod[n<<1|1].second+=prop[n];
+        prop[n]=0;
+    }
+
+    void add(ll n, ll s, ll e, ll l, ll r, ll val){
+        if(s>e)return;
+        if(s!=e)propagate(n);
+        if(l<=s&&e<=r){
+            nod[n].first+=val;
+            nod[n].second+=val;
+            prop[n]+=val;
+            return;
+        }
+        else if(r<s||l>e){
+            return;
+        }
+        ll m=s+e>>1;
+        add(n<<1,s,m,l,r,val);
+        add(n<<1|1,m+1,e,l,r,val);
+        nod[n]=minimaxi(nod[n<<1],nod[n<<1|1]);
+    }
+
+    pll query(ll n, ll s, ll e, ll l, ll r){
+        if(s>e)return INF;
+        if(s!=e)propagate(n);
+        if(l<=s&&e<=r){
+            return nod[n];
+        }
+        else if(r<s||l>e){
+            return INF;
+        }
+        ll m=s+e>>1;
+        pll lef=query(n<<1,s,m,l,r);
+        pll rig=query(n<<1|1,m+1,e,l,r);
+        return minimaxi(lef,rig);
+    }
+};
+
+void solve(ll testcase){
+    ll i,j;
+    ll n,m;
+    cin>>n;
+    vector<pair<ll,pll>>arr(n);
+    vector<ll>xrr;
+    for(i=0;i<n;i++){
+        char c;
+        ll x,y;
+        cin>>c>>x>>y;
+        if(c=='|')arr[i]={x,{y,y}},xrr.push_back(y),xrr.push_back(y+1),xrr.push_back(y-1);
+        else arr[i]={1,{y,x+y-1}},xrr.push_back(y),xrr.push_back(y+1),xrr.push_back(y-1)
+        ,xrr.push_back(x+y-1),xrr.push_back(x+y-2),xrr.push_back(x+y);
+    }
+    ranges::sort(xrr);
+    xrr.erase(unique(xrr.begin(), xrr.end()),xrr.end());
+    for(i=0;i<n;i++){
+        auto&[_,p]=arr[i];
+        auto&[x,y]=p;
+        x=ranges::lower_bound(xrr,x)-xrr.begin();
+        y=ranges::lower_bound(xrr,y)-xrr.begin();
+    }
+    segtree seg(xrr.size()+1);
+    for(i=0;i<n;i++){
+        auto&[c,p]=arr[i];
+        auto&[x,y]=p;
+        if(x==y){
+            cout<<'S';
+            seg.add(1,0,xrr.size(),x,y,c);
+        }
+        else{
+            pll q=seg.query(1,0,xrr.size(),x,y);
+            if(q.first==q.second){
+                cout<<'S';
+                seg.add(1,0,xrr.size(),x,y,1);
+            }
+            else cout<<'U';
+        }
+    }
+}
+
+
+int main(){
+    setup();
+    preprocess();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
