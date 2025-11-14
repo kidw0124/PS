@@ -1,0 +1,49 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+
+void setup(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    cin.tie(0)->sync_with_stdio(0);
+#endif
+}
+
+void preprocess(){
+
+}
+
+void solve(ll testcase){
+    ll i,j;
+    ll n,c;
+    cin>>c>>n;
+    vector<ll>arr(n);
+    for(i=0;i<n;i++)cin>>arr[i];
+    for(i=51;i>=-51;i--){
+        ll ans=0;
+        for(j=0;j<n;j++){
+            ll cnt=0;
+            while(j<n&&arr[j]<i){
+                j++,cnt++;
+            }
+            ans=max(ans,cnt);
+        }
+        if(ans<=c){
+            cout<<i<<"\n";
+            break;
+        }
+    }
+}
+
+
+int main(){
+    setup();
+    preprocess();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
