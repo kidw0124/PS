@@ -1,0 +1,10 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n,m;
+    cin>>n>>m;
+    if(n*81<=m*100){
+        cout<<"yaho";
+    }
+    else cout<<"no";
+}
