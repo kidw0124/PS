@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    map<char,string>mp;
+    mp['F']="Foundation";
+    mp['E']="Exploration";
+    mp['C']="Claves";
+    mp['V']="Veritas";
+    string str;
+    cin>>str;
+    cout<<mp[str[0]];
+}
