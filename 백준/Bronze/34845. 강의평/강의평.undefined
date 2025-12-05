@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+int main(){
+    ll n,p;
+    cin>>n>>p;
+    vector arr(n,0ll);
+    for(auto&x:arr)cin>>x;
+    ll m=accumulate(arr.begin(),arr.end(),0ll);
+    cout<<max(0ll,(n*p-m-1)/(100-p)+1);
+}
