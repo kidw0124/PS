@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+using namespace std;
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+#define debug if constexpr(ddebug) cout << "[DEBUG] "
+
+int arr[100'000];
+void solve(int testcase){
+    int i,j,k;
+    int n,m;
+    cin>>n;
+    for(i=0;i<n;i++)cin>>arr[i];
+    cin>>m;
+    for(i=0;i<m;i++){
+        int l,r;
+        cin>>l>>r;
+        r++;
+        int ans=0;
+        for(j=l;j<r;j++){
+            ans+=arr[j];
+        }
+        cout<<ans<<"\n";
+    }
+}
+
+void setup() {
+    if(ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    }
+    else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    int i, j, k;
+
+}
+
+int main() {
+    setup();
+    preprocess();
+    int t = 1;
+//    cin >> t;
+    for (int testcase = 1; testcase <= t; testcase++){
+        solve(testcase);
+    }
+    return 0;
+}
