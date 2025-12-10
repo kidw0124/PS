@@ -1,0 +1,21 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int a,b,c,d;
+    cin>>a>>b>>c>>d;
+    if((a+b+c+d)&1)cout<<-1;
+    else{
+        if((a+c)&1){
+            if(pair(a,b)>pair(c,d))swap(a,c),swap(b,d);
+            cout<<fixed<<setprecision(0);
+            cout<<floor((a+c)/2.0)<<" ";
+            if(b>d){
+                cout<<floor((b+d)/2.0);
+            }
+            else cout<<ceil((b+d)/2.0);
+        }
+        else{
+            cout<<(a+c)/2<<" "<<(b+d)/2;
+        }
+    }
+}
