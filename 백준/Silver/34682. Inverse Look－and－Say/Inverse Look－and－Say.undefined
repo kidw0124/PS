@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld=long double;
+void setup(){
+#ifdef kidw0124
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#else
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+#endif
+}
+
+void solve(ll testcase){
+    string str;
+    cin>>str;
+    auto no=[](){
+        cout<<"-1";
+        exit(0);
+    };
+    auto make_fow=[&no](const string&str){
+        string ret;
+        int i=0;
+        while(i<str.size()){
+            int cnt=0;
+            char c=str[i];
+            while(i<str.size()&&str[i]==c)i++,cnt++;
+            if(cnt<10){
+                ret+=cnt+'0';
+                ret+=c;
+            }
+            else no();
+        }
+        return ret;
+    };
+    auto make_rev=[&no](const string&str){
+        string ret;
+        for(int i=0;i<str.size();i+=2){
+            char c=str[i+1];
+            ll cnt=str[i]-'0';
+            if(cnt<1||cnt>9||!isdigit(c))no();
+            else{
+                while(cnt--)ret+=c;
+            }
+        }
+        return ret;
+    };
+    if(str.size()%2==0){
+        string rev=make_rev(str);
+        if(rev[0]=='0')no();
+        else if(make_fow(rev)==str)cout<<rev<<"\n";
+        else no();
+    }
+    else no();
+
+}
+
+int main(){
+    setup();
+    ll t=1;
+//    cin>>t;
+    for(int i=0;i<t;i++){
+        solve(i+1);
+    }
+}
