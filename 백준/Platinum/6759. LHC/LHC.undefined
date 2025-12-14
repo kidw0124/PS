@@ -1,0 +1,128 @@
+#define private public
+#include <bitset>
+#undef private
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimize("inline")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using ull = unsigned long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+using ld= long double;
+
+pll check_cnt(vector<vector<ll>>grp) {
+    ll i,j;
+    ll n;
+    n=grp.size()-1;
+    vector<ll>par(n+1),dep(n+1);
+    function<void(ll,ll)>dfs=[&](ll u,ll p){
+        par[u]=p;
+        for(auto &w:grp[u]){
+            if(w!=p){
+                dep[w]=dep[u]+1;
+                dfs(w,u);
+            }
+        }
+    };
+    dep[1]=0;
+    dfs(1,-1);
+    ll farthest=max_element(dep.begin(),dep.end())-dep.begin();
+    dep[farthest]=0;
+    dfs(farthest,-1);
+    ll farthest2=max_element(dep.begin(),dep.end())-dep.begin();
+    ll d=dep[farthest2];
+    function<ll(ll,ll)>dfs_cnt=[&](ll u,ll p){
+        ll ret=dep[u]==d/2;
+        vector<ll>childs;
+        for(auto &w:grp[u]){
+            if(w!=p){
+                dep[w]=dep[u]+1;
+                if(p==-1){
+                    childs.push_back(dfs_cnt(w,u));
+                }
+                else{
+                    ret+=dfs_cnt(w,u);
+                }
+            }
+        }
+        ll sum=accumulate(childs.begin(),childs.end(),0ll);
+        ll sqsum=accumulate(childs.begin(),childs.end(),0ll,[&](ll a,ll b){
+            return a+b*b;
+        });
+        return ret+(sum*sum-sqsum)/2;
+    };
+    if(d&1){
+        ll mid1=farthest2,mid2=farthest2;
+        for(i=0;i<d/2;i++){
+            mid1=par[mid1];
+            mid2=par[mid2];
+        }
+        mid2=par[mid2];
+        dep[mid1]=0;
+        dep[mid2]=0;
+        return {d,dfs_cnt(mid1,mid2)*dfs_cnt(mid2,mid1)};
+    }
+    else{
+        ll mid=farthest2;
+        for(i=0;i<d/2;i++){
+            mid=par[mid];
+        }
+        dep[mid]=0;
+        return {d,dfs_cnt(mid,-1)};
+    }
+}
+
+void solve(ll testcase) {
+    ll i,j;
+    ll n;
+    cin>>n;
+    vector<vector<ll>>grp(n+1);
+    for(i=1;i<=n-1;i++){
+        ll a,b;
+        cin>>a>>b;
+        grp[a].push_back(b);
+        grp[b].push_back(a);
+    }
+    auto [diameter,cnt]=check_cnt(grp);
+    cout<<diameter+1<<" "<<cnt<<"\n";
+}
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+}
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+//    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+    }
+    return 0;
+}
