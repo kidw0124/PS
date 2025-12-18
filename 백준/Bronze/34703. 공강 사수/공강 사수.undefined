@@ -1,0 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    int n;
+    cin>>n;
+    vector<int>arr(n);
+    for(auto&x:arr)cin>>x;
+    ranges::sort(arr);
+    arr.erase(unique(arr.begin(),arr.end()),arr.end());
+    if(arr.size()==5)cout<<"NO";
+    else cout<<"YES";
+}
