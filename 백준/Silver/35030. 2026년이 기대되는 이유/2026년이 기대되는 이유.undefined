@@ -1,0 +1,49 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+
+bool isprime(ll n){
+    ll i=2;
+    if(n<=1)return false;
+    for(i=2;i*i<=n;i++)if(n%i==0)return false;
+    return true;
+}
+
+ll issi[100'004];
+
+void preprocess(){
+    auto chk=[](ll s){
+        if(!isprime(s+1))return false;
+        string str=to_string(s);
+        for(int i=1;i<str.size();i++){
+            ll x=stoll(str.substr(0,i))*stoll(str.substr(i));
+            if(!isprime(x+1))return false;
+        }
+        return true;
+    };
+    for(int i=1;i<=100'000;i++){
+        issi[i]=issi[i-1];
+        if(chk(i))issi[i]++;
+    }
+}
+
+void solve(){
+    ll n;
+    cin>>n;
+    cout<<issi[n]<<"\n";
+}
+
+int main(){
+#ifndef kidw0124
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+#else
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#endif
+    preprocess();
+    ll t;
+    cin>>t;
+    while(t--)solve();
+
+}
