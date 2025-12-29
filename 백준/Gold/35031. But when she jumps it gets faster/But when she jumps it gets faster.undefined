@@ -1,0 +1,69 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+
+void preprocess(){
+    ll i,j,k;
+}
+
+void solve(){
+    ll i,j;
+    ll n,k,l;
+    cin>>n>>l>>k;
+    vector<ll>sum(2*l);
+    for(i=0;i<k;i++){
+        ll x;
+        cin>>x;
+        x--;
+        sum[x]++;
+        sum[x+l]++;
+    }
+    for(i=1;i<2*l;i++){
+        sum[i]+=sum[i-1];
+    }
+    ll cnt=0;
+    ll f=1;
+    ll now=0;
+    ll ans=0;
+    while(cnt<n){
+        ll nex=now+f;
+        ll q=nex/l-now/l;
+        nex%=l;
+        ll nf;
+        if(nex<now){
+            nex+=l;
+            cnt+=q;
+            q--;
+            nf=f+q*k;
+            nf+=nex==0?0:sum[nex-1];
+            nf-=now==0?0:sum[now-1];
+        }
+        else{
+            cnt+=q;
+            nf=f+q*k;
+            nf+=nex==0?0:sum[nex-1];
+            nf-=now==0?0:sum[now-1];
+        }
+        f=nf;
+        now=nex%l;
+        ans++;
+    }
+    cout<<ans;
+
+
+}
+
+int main(){
+#ifndef kidw0124
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+#else
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+#endif
+    preprocess();
+    ll t=1;
+//    cin>>t;
+    while(t--)solve();
+
+}
