@@ -1,0 +1,10 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+    string s,r;
+    cin>>s>>s>>r;
+    if(s==r)cout<<"Good";
+    else if(ranges::count(s,'w')==ranges::count(r,'w'))cout<<"Its fine";
+    else if(ranges::count(s,'w')<ranges::count(r,'w'))cout<<"Manners maketh man";
+    else cout<<"Oryang";
+}
