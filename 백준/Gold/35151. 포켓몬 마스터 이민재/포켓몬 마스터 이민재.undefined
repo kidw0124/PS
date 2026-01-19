@@ -1,0 +1,116 @@
+#define private public
+#include <bitset>
+#undef private
+#include <bits/stdc++.h>
+#include <immintrin.h>
+#pragma comment(linker, "/STACK:336777216")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimize("inline")
+using namespace std;
+#ifdef kidw0124
+constexpr bool ddebug = true;
+#else
+constexpr bool ddebug = false;
+#endif
+using ll = long long;
+using ull = unsigned long long;
+using pll = pair<ll, ll>;
+#define debug \
+  if constexpr (ddebug) cout << "[DEBUG] "
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+using ld= long double;
+
+void solve(ll testcase) {
+    ll i,j;
+    ll r,hpmax,f;
+    cin>>r>>hpmax>>f;
+    ll goal=2*3*hpmax*255;
+    struct Answer{
+        ll a;
+        string s;
+    };
+
+    auto cmp=[goal](const Answer &x,const Answer &y){
+        if((x.a>=goal&&y.a>=goal)||(x.a==y.a))return x.s.size()<y.s.size();
+        else return x.a>y.a;
+    };
+
+    auto chk_only_f=[r,hpmax,goal,f
+                     ](){
+        Answer ret;
+        ll hpnow=hpmax;
+        ret.a=r*(3*hpmax-2*hpnow)*2;
+        ret.s="";
+        while(ret.a<goal&&hpnow>1){
+            ll hpnext=max(1ll,hpnow-f);
+            hpnow=hpnext;
+            ret.a=r*(3*hpmax-2*hpnow)*2;
+            ret.s+='F';
+        }
+        return ret;
+    };
+
+    auto chk_with_g=[r,hpmax,goal,f
+                     ](){
+        Answer ret;
+        ll hpnow=hpmax;
+        ret.a=r*(3*hpmax-2*hpnow)*3;
+        ret.s="G";
+        while(ret.a<goal&&hpnow>1){
+            ll hpnext=max(1ll,hpnow-f);
+            hpnow=hpnext;
+            ret.a=r*(3*hpmax-2*hpnow)*3;
+            ret.s+='F';
+        }
+        return ret;
+    };
+
+    auto chk_with_y=[r,hpmax,goal,f
+                     ](){
+        Answer ret;
+        ll hpnow=max(1ll,hpmax-f);
+        ret.a=r*(3*hpmax-2*hpnow)*5;
+        ret.s="YF";
+        while(ret.a<goal&&hpnow>1){
+            ll hpnext=max(1ll,hpnow-f);
+            hpnow=hpnext;
+            ret.a=r*(3*hpmax-2*hpnow)*5;
+            ret.s+='F';
+        }
+        return ret;
+    };
+
+    Answer ans=min({chk_only_f(),chk_with_g(),chk_with_y()},cmp);
+    ans.s+='C';
+    cout<<ans.s<<"\n";
+}
+
+void setup() {
+    if (ddebug) {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    } else {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        cout.tie(0);
+    }
+}
+
+void preprocess() {
+    ll i, j, k;
+}
+
+signed main() {
+    setup();
+    preprocess();
+    ll t = 1;
+    cin >> t;
+    for (ll testcase = 1; testcase <= t; testcase++) {
+        solve(testcase);
+    }
+    return 0;
+}
