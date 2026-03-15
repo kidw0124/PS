@@ -1,4 +1,4 @@
-# [Gold V] KCPC 스티커 만들기 - 35162 
+# [Gold IV] KCPC 스티커 만들기 - 35162 
 
 [문제 링크](https://www.acmicpc.net/problem/35162) 
 
