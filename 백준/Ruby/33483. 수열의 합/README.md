@@ -1,0 +1,54 @@
+# [Ruby V] 수열의 합 - 33483 
+
+[문제 링크](https://www.acmicpc.net/problem/33483) 
+
+### 성능 요약
+
+메모리: 13768 KB, 시간: 196 ms
+
+### 분류
+
+수학, 정수론, 고속 푸리에 변환, 페르마의 소정리, 생성 함수, 중국인의 나머지 정리, 이산 로그
+
+### 제출 일자
+
+2026년 04월 18일 01:08:28
+
+### 문제 설명
+
+<blockquote>
+<p>2024년 2학기는 지금까지 MatKor Cup을 주도하던 동우, 재우, 종우를 비롯한 많은 사람들의 마지막 학기이다. MatKor는 특별한 사건 없이 한 학기가 지나갔지만, 국가적으로 평화롭지는 않던 연말이 지나고 2025년이 되었다. <a href="/problem/33472">재우는 올해 1월 1일에도 떠오르는 태양을 보며 올해는 면허를 따야지 다짐한다.</a></p>
+</blockquote>
+
+<p>재우는 2025년이 밝고 $2025=(1+2+3+\cdots +9)^2$이라는 것에 매우 놀랐다. 심지어 재우는 $2025=1^3+2^3+3^3+\cdots +9^3$도 성립하는 것을 보고 매우 놀라 동우에게 말했다. 동우는 이를 보더니 두 식은 동치가 아니냐며 일침을 날렸다.</p>
+
+<p style="text-align: center;"><img alt="" src="" style="width: 320px; max-width: 100%;"></p>
+
+<p>옆에서 이 모습을 지켜보던 마음씨 착한 도훈이는 재우를 위로해 주며, 재우에게 동우 몰래 $X^3$과 $3^X$을 이용한 해시 인증 체계를 만들자고 제안했다.</p>
+
+<p>먼저 어떤 수열 $A$에 함수 $T\left( A \right)$를 원소들의 세제곱의 합을 $3$의 거듭제곱 취한 꼴로 정의한다. 즉, 아래와 같이 정의된다.</p>
+
+<p>\[T\left( A \right) =3^{\sum_{i=1}^NA_i^3}\]</p>
+
+<p>인증을 위해 먼저 개인키로 세 정수 $N$, $S$, $L$을 준비한다. 이제 수열의 길이가 $N$이며, 모든 원소는 $0$ 이상 $L$ 이하의 정수이고, 모든 원소의 합이 $S$인 수열의 집합을 $\mathbb{A}\left( N,S,L \right)$라 하자. 즉, 아래와 같이 정의된다.</p>
+
+<p>\[\mathbb{A}\left( N,S,L \right) =\left\{ A\in{\mathbb{Z}_{L+1}}^N\middle |\sum_{i=1}^NA_i=S \right\}\]</p>
+
+<p>이제 해시 함수 $\mathbb{H}\left( N,S,L \right)$은 모든 $\mathbb{A}\left( N,S,L \right)$의 원소에 대해 $T$값의 합으로 정의한다. 즉, 아래와 같이 정의된다. 만약 $\mathbb{A}\left( N,S,L \right) =\varnothing$이라면 $\mathbb{H}\left( N,S,L \right) =0$이다.</p>
+
+<p>\[\mathbb{H}\left( N,S,L \right) =\sum_{A\in\mathbb{A}\left( N,S,L \right)}T\left( A \right)\]</p>
+
+<p>재우와 도훈이는 이제 새로운 인증 요청이 들어오면 $\mathbb{H}$를 통해 계산된 해시값을 비교해 인증할 수 있다. 그리고 <code>C++</code>을 좋아하는 두 명은 큰 수 연산이 귀찮아 해시값의 모듈로를 통해 비교하고자 한다. 즉, 올바른 키가 $\left( N,S,L \right)$이고, 입력된 키가 $\left( N^\prime,S^\prime,L^\prime \right)$일 때, $P=998\, 244\, 353$에 대해 $\mathbb{H}\left( N,S,L \right)\equiv\mathbb{H}\left( N^\prime,S^\prime,L^\prime \right)\pmod P$인지 검사해 성립한다면 올바른 인증이라고 판단할 것이다.</p>
+
+<p>이제 재우는 이 해시가 안전한지 검사하기 위해 해시 충돌의 가능성을 알아보려 한다. 즉, $\left( N,S,L \right)\ne\left( N^\prime,S^\prime,L^\prime \right)$이지만, $\mathbb{H}\left( N,S,L \right)\equiv\mathbb{H}\left( N^\prime,S^\prime,L^\prime \right)\pmod P$가 성립하는 경우가 있는지 알아보려 한다. 재우는 특히 키 $\left( N,S,L \right)$가 주어질 때, $\mathbb{H}\left( N,S,L \right)\equiv\mathbb{H}\left( 1,X,X \right)\pmod P$를 만족하는 음이 아닌 정수 $X$를 찾고 싶다.</p>
+
+<p>재우를 도와 주어진 $\left( N,S,L \right)$에 대해 해시 충돌을 일으킬 수 있는 $\left( 1,X,X \right)$가 있다면 찾아보자.</p>
+
+### 입력 
+
+ <p>첫 번째 줄에 수열의 길이 $N(2\le N\le 10^{18})$, 수열의 합 $S(0\le S\le 2\cdot 10^5)$, 원소의 최댓값을 의미하는 $L(0\le L\le S)$이 공백으로 구분되어 주어진다.</p>
+
+### 출력 
+
+ <p>첫 번째 줄에 주어진 조건을 만족하는 음이 아닌 정수 $X$가 존재하면 $X$의 최솟값을, 존재하지 않는다면 <span style="color:#e74c3c;"><code>-1</code></span>을 출력한다.</p>
+
